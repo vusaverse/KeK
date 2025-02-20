@@ -17,11 +17,13 @@ This repository contains scripts for the KeK (Kwaliteit en Kosten) project of UN
 KeK/
 ├── README.md                # Project overview and instructions
 ├── R/                       # Helper functions (e.g., utility functions)
-├── 00_project/                    # Scripts to setup RStudio project
-├── 01_read/                    # Scripts for reading data from various sources
-├── 02_prepare/                 # Scripts for data preparation and cleaning
-├── 03_validate/                # Scripts for data validation
-├── 04_send/                    # Scripts for sending data via API
+├── 00_project/              # Scripts to setup RStudio project
+├── 01_read/                 # Scripts for reading data from various sources
+├── 02_prepare/              # Scripts for data preparation and cleaning
+├── 03_validate/             # Scripts for data validation
+├── 04_send/                 # Scripts for sending data via API
+├── 99_setup.R               # Setup RStudio project settings
+└── 99_run_pipeline.R        # Script to run and validate the entire pipeline
 ```
 
 
@@ -30,12 +32,35 @@ KeK/
 1. Run the project setup script to initialize the environment:
 
 ```
-source("00_Project_Setup.R")
+source("99_setup.R")
 ```
+
 
 This script will execute all necessary setup steps in the correct order.
 
-2. Use the appropriate scripts in the read/, prepare/, validate/, and send/ directories to process and send data.
+2. To run the entire pipeline, which includes reading, preparing, validating, and sending data, use:
+
+
+```
+source("99_run_pipeline.R")
+```
+
+
+This script will execute all stages of the pipeline in the correct order and perform validation checks.
+
+3. If you need to run specific stages or scripts individually:
+
+- Use scripts in `01_read/` for reading data from various sources
+- Use scripts in `02_prepare/` for data preparation and cleaning
+- Use scripts in `03_validate/` for data validation
+- Use scripts in `04_send/` for sending data via API
+
+4. Helper functions can be found in the `R/` directory. These can be sourced individually as needed or will be automatically loaded when running the full pipeline.
+
+5. For any project-specific setup or configuration, refer to scripts in the `00_project/` directory.
+
+**Note:** It's recommended to use the `99_run_pipeline.R` script for normal operations as it ensures all steps are executed in the correct order and includes validation checks.
+
 
 # Key Functions
 

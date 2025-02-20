@@ -140,9 +140,6 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
-  sample_n(5)
-
 bbb <- send_data_to_kek(dfTT_data_entry_app2, "opleidings")
 
 clear_script_objects()

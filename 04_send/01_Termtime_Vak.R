@@ -266,7 +266,6 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
     -unl_hoorcollegetotaalcontacturen
   ) %>%
   ungroup() %>%
-  sample_n(50) %>%
   unnest()
 
 

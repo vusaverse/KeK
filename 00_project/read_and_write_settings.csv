@@ -1,0 +1,10 @@
+script_dir;type;read_data_dir;read_base_data_dir;read_add_branch;write_data_dir;write_base_data_dir;write_add_branch;write_rds;write_csv;write_fst;read_extension;read_message;write_message;notes
+01_read;;Datasets;NETWORK_DIR;FALSE;1. Ingelezen data;OUTPUT_DIR;TRUE;TRUE;FALSE;FALSE;csv;Be aware! In this directory very diverse, raw, data is loaded, so this function might be not be appropriate.;;
+02_prepare;;1. Ingelezen data;OUTPUT_DIR;TRUE;2. Geprepareerde data;OUTPUT_DIR;TRUE;TRUE;FALSE;FALSE;rds;;;
+03_validate;;2. Geprepareerde data;OUTPUT_DIR;TRUE;3. Analyseset;OUTPUT_DIR;TRUE;TRUE;TRUE;FALSE;rds;;;
+04. Analyseren;;3. Analyseset;OUTPUT_DIR;TRUE;4. Analyses;OUTPUT_DIR;TRUE;TRUE;FALSE;FALSE;rds;;;
+05. Rapporten;default;3. Analyseset;OUTPUT_DIR;TRUE;TABLEAU_DATA_DIR;NETWORK_DIR;FALSE;TRUE;TRUE;FALSE;rds;Be aware! This directory has multiple types, the default is used for data assets;Be aware! This directory has multiple types, the default is used for Tableau;
+04_send;exception;2. Geprepareerde data;OUTPUT_DIR;TRUE;5. Rapportages;OUTPUT_DIR;TRUE;TRUE;TRUE;FALSE;rds;;;
+20. Test;;2. Geprepareerde data;OUTPUT_DIR;TRUE;20. Test;OUTPUT_DIR;TRUE;TRUE;FALSE;FALSE;rds;Be aware! In this directory very diverse, potentially raw, data is loaded, so this function might be not be appropriate.;;
+30. Hulpmiddelen;;2. Geprepareerde data;OUTPUT_DIR;TRUE;30. Ondersteunende data;OUTPUT_DIR;TRUE;TRUE;FALSE;FALSE;rds;Be aware! In this directory very diverse, potentially raw, data is loaded, so this function might be not be appropriate.;;
+40. Controleren ;;2. Geprepareerde data;OUTPUT_DIR;TRUE;40. Gecontroleerde data;OUTPUT_DIR;TRUE;TRUE;TRUE;FALSE;rds;Be aware! In this directory very diverse, potentially raw, data is loaded, so this function might be not be appropriate.;;

@@ -1,0 +1,11 @@
+script_dir;type;data_dir;base_data_dir;add_branch;extension;message;notes
+01_read;;Datasets;NETWORK_DIR;FALSE;csv;Be aware! In this directory very diverse, raw, data is loaded, so this function might be not be appropriate.;
+02_prepare;;1. Ingelezen data;OUTPUT_DIR;TRUE;rds;;
+03_validate;;2. Geprepareerde data;OUTPUT_DIR;TRUE;rds;;
+04. Analyseren;;3. Analyseset;OUTPUT_DIR;TRUE;rds;;
+05. Rapporten;default;3. Analyseset;OUTPUT_DIR;TRUE;rds;Be aware! This directory has multiple types, the default is used for data assets, exception has '2. Geprepareerde data';
+04_send;exception;2. Geprepareerde data;OUTPUT_DIR;TRUE;rds;;
+06. Extracten WP;;2. Geprepareerde data;OUTPUT_DIR;TRUE;rds;;
+20. Test;;2. Geprepareerde data;OUTPUT_DIR;TRUE;rds;Be aware! In this directory very diverse, potentially raw, data is loaded, so this function might be not be appropriate.;
+30. Hulpmiddelen;;2. Geprepareerde data;OUTPUT_DIR;TRUE;rds;Be aware! In this directory very diverse, potentially raw, data is loaded, so this function might be not be appropriate.;
+40. Controleren;;2. Geprepareerde data;OUTPUT_DIR;TRUE;rds;Be aware! In this directory very diverse, potentially raw, data is loaded, so this function might be not be appropriate.;

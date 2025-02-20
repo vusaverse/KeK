@@ -1,0 +1,10 @@
+﻿script_dir;type;data_dir;base_data_dir;add_branch;extensions;message;notes
+01_read;;1. Ingelezen data;OUTPUT_DIR;TRUE;rds;;
+02_prepare;;2. Geprepareerde data;OUTPUT_DIR;TRUE;rds;;
+03_validate;;3. Analyseset;OUTPUT_DIR;TRUE;rds;;
+04. Analyseren;;4. Analyses;OUTPUT_DIR;TRUE;rds;;
+05. Rapporten;default;TABLEAU_DATA_DIR;NETWORK_DIR;FALSE;rds, csv;Be aware! This directory has multiple types, the default is used for Tableau;
+04_send;exception;5. Rapportages;OUTPUT_DIR;TRUE;rds, csv;;
+20. Test;;20. Test;OUTPUT_DIR;TRUE;rds;;
+30. Hulpmiddelen;;30. Ondersteunende data;OUTPUT_DIR;TRUE;rds;;
+40. Controleren ;;40. Gecontroleerde data;OUTPUT_DIR;TRUE;rds, csv;;

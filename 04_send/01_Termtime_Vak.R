@@ -212,6 +212,27 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
   )
 
 
+dfopleidings <- get_kek_data("opleidings")
+
+dfTT_data_entry_app <- dfTT_data_entry_app %>%
+  rowwise() %>%
+  mutate(
+    `unl_Opleiding@odata.bind` = {
+      match <- dfopleidings %>%
+        filter(unl_opleidingscodeisat == INS_Opleidingscode_actueel) %>%
+        pull(unl_opleidingid)
+      
+      if (length(match) > 0) {
+        paste0("unl_opleidings(", match[1], ")")
+      } else {
+        NA_character_
+      }
+    }
+  ) %>%
+  ungroup()
+
+
+
 ##' Replace value by code for unl_werkvormnaam
 ##'
 
@@ -262,12 +283,16 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
     -unl_werkvorm2totaalcontacturen,
     -unl_werkvorm3naam,
     -unl_jaar,
+    -INS_Opleidingscode_actueel,
     # -`unl_Collegejaar@odata.bind`,
     -unl_hoorcollegetotaalcontacturen
   ) %>%
   ungroup() %>%
   unnest()
 
+
+dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
+  dplyr::filter(!is.na(`unl_Opleiding@odata.bind`)) 
 
 bbb <- send_data_to_kek(dfTT_data_entry_app2, "vaks")
 

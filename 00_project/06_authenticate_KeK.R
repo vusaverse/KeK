@@ -37,4 +37,4 @@ if (status_code(response) == 200) {
 }
 
 
-clear_script_objects(access_token)
+clear_script_objects()

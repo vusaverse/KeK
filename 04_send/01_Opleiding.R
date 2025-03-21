@@ -132,7 +132,8 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
   select(
     -unl_taalvanopleiding,
     -OPL_Code_actueel
-  )
+  ) %>% 
+  distinct()
 
 
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -288,7 +288,9 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
     -unl_hoorcollegetotaalcontacturen
   ) %>%
   ungroup() %>%
-  unnest()
+  unnest() %>% 
+  ## minuten naar uur
+  mutate(unl_hoorcollegeurenperweekpergroep = unl_hoorcollegeurenperweekpergroep / 60)
 
 
 dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%

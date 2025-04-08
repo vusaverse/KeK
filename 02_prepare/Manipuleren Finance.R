@@ -47,6 +47,15 @@ dfKEK_FIN_compleet <- dfKEK_FIN %>%
   ) %>%
   group_by(
     Faculteit,
+    Jaar,
+    `Mapping KeK`,
+    Toewijzing
+  ) %>% 
+  filter(Year == "YTD Realisatie vorig jaar" |
+           case_when(Jaar == 2023 ~ Year == "YTD Realisatie")) %>% 
+  ungroup() %>% 
+  group_by(
+    Faculteit,
     `Mapping KeK`,
     Jaar
   ) %>%

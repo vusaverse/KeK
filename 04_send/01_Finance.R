@@ -32,9 +32,17 @@ dfKEK_FIN_pivot <- dfKEK_FIN %>%
     values_from = Waarde
   )
 
+## Vervang NA voor 0 (anders geen totaal in DEA)
+dfKEK_FIN_pivot <- dfKEK_FIN_pivot %>% 
+  mutate(across(where(is.numeric), ~replace_na(., 0)))
+
 ## Pas kolomnamen aan zodat deze overeenkomen met KeK data entry app
 dfKEK_FIN_data_entry_app <- dfKEK_FIN_pivot %>%
   wrapper_translate_colnames_documentation(KeK_FAC_Finance_naming)
+
+## Testing filter
+# dfKEK_FIN_data_entry_app <- dfKEK_FIN_data_entry_app %>% 
+#   filter(unl_faculteit == "ACTA")
 
 ## TODO: afronden?
 ## Alleen 1 decimaal bij volgende variabelen van dfFIN_SBE_data_entry_app:
@@ -116,6 +124,11 @@ dfKEK_FIN_data_entry_app <- dfKEK_FIN_data_entry_app %>%
       }
     })
   )
+
+## Lege variabelen toevoegen (anders geen totale berekeningen in DEA)
+dfKEK_FIN_data_entry_app <- dfKEK_FIN_data_entry_app %>% 
+  mutate(unl_onderzoek4egeldstroom = 0,
+         unl_aanvullendesubsidies = 0)
 
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ## X. Send POST ####

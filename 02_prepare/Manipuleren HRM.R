@@ -15,7 +15,6 @@ dfKEK_HRM <- read_file_proj("KEK_HRM")
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ## 2. EDIT ####
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 ## Add faculteit using mapping table profit center
 dfKEK_HRM <- dfKEK_HRM %>%
   mutate(Profit_center_afkorting = str_sub(`Profit Center aanstelling`, 1, 3)) %>%
@@ -25,6 +24,12 @@ dfKEK_HRM <- dfKEK_HRM %>%
     mapping_table_name = "Mapping_KeK_profit_center_faculteit.csv",
     KeepOriginal = FALSE
   )
+
+## Adjust Tandartsdocent and Specialist in opleiding
+## "tandartsdocent" = docent en "specialist in opleiding" = AIO
+dfKEK_HRM <- dfKEK_HRM %>% 
+  mutate(Omschrijving = str_replace(Omschrijving, "Tandartsdocent", "Docent"),
+         Omschrijving = str_replace(Omschrijving, "Specialist in opleiding", "Promovendus"))
 
 ## Make moth columns
 month_cols <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
@@ -62,13 +67,13 @@ KEK_HRM_Personeel_prepared <- dfKEK_HRM %>%
     omschrijving_zonder_nummer = str_replace_all(`Omschrijving`, "\\d+", "") %>% str_trim()
   )
 
-
 ## Student-assistent special classification: previously WP, but now OBP
 KEK_HRM_WP_Functie_geldstroom <- KEK_HRM_Personeel_prepared %>%
   filter(
     `WP of OBP` == "WP" | omschrijving_zonder_nummer == "Student-assistent",
     Kernactiviteit != "OV"
   ) %>%
+  filter(Geldstroom == "Geldstroom 1") %>%
   group_by(omschrijving_zonder_nummer, Kernactiviteit, Jaar, Faculteit) %>%
   summarise(
     FTE_gemiddelde = sum(FTE_gemiddelde),
@@ -105,6 +110,15 @@ KEK_HRM_compleet <- bind_rows(
   arrange(Jaar, Faculteit, Veldnaam) %>%
   bind_rows(KEK_HRM_OBP) %>%
   arrange(Jaar, Faculteit)
+
+## Data from 2021 * 2 (only data from july)
+KEK_HRM_compleet <- KEK_HRM_compleet %>%
+  mutate(FTE_gemiddelde = case_when(Jaar == 2021 ~ FTE_gemiddelde * 2,
+                                    TRUE ~ FTE_gemiddelde))
+
+## Mutate verslagjaar
+KEK_HRM_compleet <- KEK_HRM_compleet %>%
+  mutate(unl_verslagjaar = Jaar)
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ## 3. CHECK ####

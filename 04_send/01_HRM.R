@@ -17,28 +17,25 @@ dfHRM_personeel <- read_file_proj("KEK_HRM_compleet")
 ## Get HRM data
 dfFac_Personeel <- get_kek_data("faculteitpersoneels")
 
+## Read documentation
+KeK_HRM_naming <- read_documentation(
+  "Documentatie_KeK_FAC_personeel_API.csv")
+
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ## 2. EDIT ####
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-## TODO: Moet al aanwezig zijn -> toevoegen aan manipuleren?
-## Add verslagjaar
-dfHRM_personeel <- dfHRM_personeel %>%
-  mutate(unl_verslagjaar = Jaar)
-
 ## Pivot
 dfHRM_personeel_pivot <- dfHRM_personeel %>%
   pivot_wider(
     names_from = Veldnaam,
-    values_from = FTE_gemiddelde
-  )
+    values_from = FTE_gemiddelde)
 
-## Read documentation
-KeK_HRM_naming <- read_documentation(
-  "Documentatie_KeK_FAC_personeel_API.csv"
-)
+## Vervang NA voor 0 (anders geen totaal in DEA)
+dfHRM_personeel_pivot <- dfHRM_personeel_pivot %>% 
+  mutate(across(where(is.numeric), ~ replace_na(., 0)))
 
 ## FTE = gemiddeld aantal FTE -> gecheckt met documentatie
-# names(dfHRM_personeel_pivot)
+#names(dfHRM_personeel_pivot)
 # [1] "Jaar"                          "Faculteit"                     "Docent"
 # [4] "Docent - OW"                   "Docent - OZ"                   "Hoogleraar"
 # [7] "Hoogleraar - OW"               "Hoogleraar - OZ"               "Onderzoeker"
@@ -60,6 +57,11 @@ KeK_HRM_naming <- read_documentation(
 dfHRM_data_entry_app <- dfHRM_personeel_pivot %>%
   wrapper_translate_colnames_documentation(KeK_HRM_naming)
 
+## Testing
+# dfHRM_data_entry_app <- dfHRM_data_entry_app %>% 
+#   filter(unl_faculteitpersoneelid == "ACTA",
+#          unl_jaar!= 2024)
+
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ## 2. LOOKUP VARIABLES ####
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -72,6 +74,14 @@ dfHRM_data_entry_app <- dfHRM_personeel_pivot %>%
 ### Faculteit ####
 ## unl_faculteitnaam = Faculteit naam Targets:unl_faculteit
 dffaculteit <- get_kek_data("faculteits")
+
+# Function to clean faculty names
+# clean_faculty_name <- function(name) {
+#   name %>%
+#     str_to_lower() %>%
+#     str_remove("^vu\\s*-\\s*") %>%
+#     str_trim()
+# }
 
 # Clean faculty names in both datasets
 dffaculteit <- dffaculteit %>%
@@ -87,20 +97,23 @@ dfHRM_data_entry_app <- dfHRM_data_entry_app %>%
     match <- dffaculteit %>%
       filter(clean_name == faculty | unl_afkortingfaculteit == faculty) %>%
       pull(unl_faculteitid)
-
+    
     if (length(match) > 0) {
       paste0("unl_faculteits(", match, ")")
     } else {
       NA_character_
     }
-  })) %>%
-  select(-clean_faculteit, -unl_faculteitpersoneelid)
+  }))
+
 
 ### Jaar ####
 ## unl_jaar = jaar | Targets:unl_collegejaar
 ## Gebruik collegejaar id uit KeK
 dfcolleges <- get_kek_data("collegejaars")
 
+# convert_to_academic_year <- function(year) {
+#   paste0(year, "-", year + 1)
+# }
 
 dfHRM_data_entry_app <- dfHRM_data_entry_app %>%
   mutate(
@@ -109,7 +122,7 @@ dfHRM_data_entry_app <- dfHRM_data_entry_app %>%
       match <- dfcolleges %>%
         filter(unl_name == year) %>%
         pull(unl_collegejaarid)
-
+      
       if (length(match) > 0) {
         paste0("unl_collegejaars(", match, ")")
       } else {
@@ -119,6 +132,7 @@ dfHRM_data_entry_app <- dfHRM_data_entry_app %>%
   )
 
 ### Rang ####
+## TODO: checken rang ipv verslagjaar
 ## unl_rang = rang | Targets:unl_rangenlijst
 dfRang <- get_kek_data("rangenlijsts")
 
@@ -128,7 +142,7 @@ dfHRM_data_entry_app <- dfHRM_data_entry_app %>%
       match <- dfkalenderjaar %>%
         filter(unl_name == year) %>%
         pull(unl_kalenderjaarid)
-
+      
       if (length(match) > 0) {
         paste0("unl_kalenderjaars(", match, ")")
       } else {
@@ -136,7 +150,6 @@ dfHRM_data_entry_app <- dfHRM_data_entry_app %>%
       }
     })
   )
-
 
 ### Verslagjaar ####
 ## unl_verslagjaar = verslagjaar | Targets:unl_kalenderjaar
@@ -149,7 +162,7 @@ dfHRM_data_entry_app <- dfHRM_data_entry_app %>%
       match <- dfkalenderjaar %>%
         filter(unl_name == year) %>%
         pull(unl_kalenderjaarid)
-
+      
       if (length(match) > 0) {
         paste0("unl_kalenderjaars(", match, ")")
       } else {
@@ -158,20 +171,32 @@ dfHRM_data_entry_app <- dfHRM_data_entry_app %>%
     })
   )
 
+## Lege variabelen toevoegen (anders geen totale berekeningen in DEA)
+dfHRM_data_entry_app <- dfHRM_data_entry_app %>% 
+  mutate(unl_obp510fte1egeldstroomonderzoek = 0,
+         unl_obp510fte1egeldstroomonderwijs = 0,
+         unl_obp11fte1egeldstroomonderzoek = 0,
+         unl_obp11fte1egeldstroomonderwijs = 0,
+         unl_kosteninhuurderden1egeldstroom = 0,
+         unl_inhuurderdenfte1egeldstroomonderwijs = 0)
+
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ## X. Send POST ####
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-## Sample data for testing
+## Filter for testing
+## Negatieve FTE: FSW (2023), RCH (2022)
+# dfHRM_data_entry_app <- dfHRM_data_entry_app %>% 
+#   filter(unl_faculteitpersoneelid %in% c("RCH", "FSW"),
+#          unl_jaar == 2022:2023)
+
+## Select DEA variables only
 dfHRM_data_entry_app2 <- dfHRM_data_entry_app %>%
-  select(
-    -unl_jaar,
-    -unl_verslagjaar,
-    -academic_year
-  )
+  select(-unl_jaar,
+         -unl_verslagjaar,
+         -academic_year,
+         -clean_faculteit,
+         -unl_faculteitpersoneelid)
 
-bbb <- send_data_to_kek(
-  dfHRM_data_entry_app2,
-  "faculteitpersoneels"
-)
-
-clear_script_objects()
+## Send data to DEA
+bbb <- send_data_to_kek(dfHRM_data_entry_app2,
+                        "faculteitpersoneels")

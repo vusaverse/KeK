@@ -132,15 +132,60 @@ termtime <- vvtermtime::authenticate(api_key, base_url)
 df_termtime_faculteiten <- vvtermtime::get_departments(termtime)
 
 
-## Geef geselecteerde werkvormen een naam
-##' TODO:
-##' naamvormen na aapassing.
-dfTT_data_entry_app <- dfTT_data_entry_app %>%
-  mutate(
-    name_werkvorm1 = "Werkcollege",
-    name_werkvorm2 = "Excursie",
-    name_werkvorm3 = "Instructiecollege"
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+## Get werkvormen ####
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+# Step 1: Identify relevant columns (non-NULL columns)
+# Extract column names related to "groups" and "totale_duur_per_groep_per_week"
+group_columns <- names(dfTT_data_entry_app) %>%
+  str_subset("^groups_") # Columns starting with "groups_"
+
+duration_columns <- names(dfTT_data_entry_app) %>%
+  str_subset("^totale_duur_per_groep_per_week_") # Columns starting with "totale_duur_per_groep_per_week_"
+
+# Ensure we are working with non-NULL columns
+non_null_columns <- dfTT_data_entry_app %>%
+  ungroup() %>% 
+  select(all_of(duration_columns)) %>%
+  summarise(across(everything(), ~ any(!is.null(.)))) %>%
+  pivot_longer(cols = everything(), names_to = "column", values_to = "not_null") %>%
+  filter(not_null) %>%
+  pull(column)
+
+# Filter group and duration columns to only include non-NULL ones
+group_columns <- group_columns[group_columns %in% str_replace(non_null_columns, "totale_duur_per_groep_per_week_", "groups_")]
+duration_columns <- duration_columns[duration_columns %in% non_null_columns]
+
+# Step 2: Reshape data into long format for processing
+long_df <- dfTT_data_entry_app %>%
+  pivot_longer(
+    cols = all_of(c(group_columns, duration_columns)),
+    names_to = c(".value", "werkvorm"),
+    names_pattern = "(.*)_(.*)"
   )
+
+# Step 3: Rank werkvormen by duration for each moduleCode and unl_jaar
+ranked_df <- long_df %>%
+  group_by(moduleCode, unl_jaar) %>%
+  filter(!is.na(totale_duur_per_groep_per_week)) %>% # Remove rows with NA durations
+  arrange(desc(totale_duur_per_groep_per_week), .by_group = TRUE) %>% # Sort by duration
+  mutate(rank = row_number()) %>% # Rank werkvormen by duration
+  ungroup()
+
+# Step 4: Assign werkvorm_1, werkvorm_2, werkvorm_3 based on rank
+result_df <- ranked_df %>%
+  filter(rank <= 3) %>% # Keep only top 3 werkvormen
+  pivot_wider(
+    id_cols = c(moduleCode, unl_jaar),
+    names_from = rank,
+    values_from = werkvorm,
+    names_prefix = "name_werkvorm"
+  )
+
+# Join back to the original dataset
+dfTT_data_entry_app <- dfTT_data_entry_app %>%
+  left_join(result_df, by = c("moduleCode", "unl_jaar"))
 
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ## X. Join dfVak ####
@@ -241,8 +286,10 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
 werkvorm_lookup <- c(
   "Hoorcollege" = 941790007,
   "Werkcollege" = 941790008,
-  "Instructiecollege" = 941790003,
+  "Instructiecollege" = 941790008,
+  "Werk/instructiecollege" = 941790008,
   "Practicum/Laboratorium" = 941790009,
+  "Practicum/Lab" = 941790009,
   "Groepsopdracht (geroosterde begeleiding)" = 941790004,
   "Groepsopdracht (met docent op afroep)" = 941790011,
   "Groepsopdracht (niet geroosterde begeleiding)" = 941790012,
@@ -269,6 +316,8 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
     unl_werkvorm3naam = map_werkvorm_to_code(unl_werkvorm3naam)
   )
 
+
+
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
   mutate(unl_verplichtkeuze = case_when(
     unl_verplichtkeuze == TRUE ~ "1",
@@ -283,14 +332,14 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
     unl_taalvanvak == "Nederlands (NL)" ~ 941790000,
     unl_taalvanvak == "Engels (EN)" ~ 941790001,
     unl_taalvanvak == "Anderstalig" ~ 941790002,
-    unl_taalvanvak == "Tweetalig (Z1)" ~ 941790003,
+    unl_taalvanvak == "Tweetalig (Z1)" ~ 941790002,
     TRUE ~ NA_integer_
   ))
 
 dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
   select(
     -unl_werkvorm2totaalcontacturen,
-    -unl_werkvorm3naam,
+    # -unl_werkvorm3naam,
     -unl_jaar,
     -INS_Opleidingscode_actueel,
     # -`unl_Collegejaar@odata.bind`,

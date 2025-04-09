@@ -193,6 +193,29 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
 
 dfVAK <- read_file_proj("KEK_Vakken", dir = "1. Ingelezen data/")
 
+Opleidingkoppel <- readrds_csv(output = "2. Geprepareerde Data/INS_Opleidingkoppel.rds")
+
+## Fill some missing opleidingscode_actueel
+dfVAK <- dfVAK %>%
+  left_join(
+    Opleidingkoppel %>%
+      distinct(INS_Studieprogramma_CD, INS_Inschrijvingsjaar, .keep_all = TRUE) %>%
+      select(INS_Studieprogramma_CD, INS_Inschrijvingsjaar, INS_Opleidingscode_actueel),
+    by = c(
+      "UAS_Vak_Opleidingscode_eigenaar" = "INS_Studieprogramma_CD",
+      "UAS_Vak_Jaar" = "INS_Inschrijvingsjaar"
+    )
+  ) %>%
+  mutate(
+    INS_Opleidingscode_actueel = case_when(
+      !is.na(INS_Opleidingscode_actueel.x) ~ INS_Opleidingscode_actueel.x,
+      !is.na(INS_Opleidingscode_actueel.y) ~ INS_Opleidingscode_actueel.y,
+      TRUE ~ NA_real_
+    )
+  ) %>%
+  select(-INS_Opleidingscode_actueel.x, -INS_Opleidingscode_actueel.y)
+
+
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
   mutate(jaar = parse_number(unl_jaar)) %>%
   left_join(dfVAK, by = c(

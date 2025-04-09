@@ -111,6 +111,7 @@ dfVAK <- dfVAKAS %>%
     # Werkvorm 2 Aantal personen WP
     # Werkvorm 2 Aantal personen OBP
 
+    UAS_Groep_Groepstype,
     ## TERMTIME?
     # Werkvorm 3 Naam
     # Werkvorm 3 Groepen

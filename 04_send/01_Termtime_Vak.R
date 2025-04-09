@@ -233,7 +233,46 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
 # [27] "unl_werkvorm2naam"                  "unl_werkvorm3naam"
 
 
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+## update unl_vakjaar ####
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+
+# Create lookup vector (right-hand values map to left-hand codes)
+vakjaar_lookup <- c(
+  "1" = 1,
+  "2" = 2,
+  "3" = 3,
+  "4" = 941790000,
+  "5" = 941790001,
+  "Premaster" = 4,  # Same code as "4" based on your options
+  "Honoursprogramma" = 5,     # Same code as "5"
+  "4" = 941790000,           # Special case for numeric 4
+  "5" = 941790001,           # Special case for numeric 5
+  "6" = 941790002,           # Special case for numeric 6
+  "7" = 941790003           # Special case for numeric 7
+)
+
+dfTT_data_entry_app <- dfTT_data_entry_app %>%
+  # Create temporary column with parsed numbers
+  mutate(parsed_num = parse_number(unl_vakjaar)) %>% 
+  # Update original column using temporary values
+  mutate(unl_vakjaar = if_else(
+    is.na(parsed_num),
+    unl_vakjaar,          # Keep original if no number found
+    as.character(parsed_num)       # Use parsed number if available
+  )) %>%
+  # Remove temporary column
+  select(-parsed_num) 
+
+dfTT_data_entry_app <- dfTT_data_entry_app %>% 
+  mutate(
+    unl_vakjaar = recode(
+      as.character(unl_vakjaar),  # Ensure character type for matching
+      !!!vakjaar_lookup,             # Spread lookup list
+      .default = NULL         # Handle non-matching cases
+    )
+  )
 
 ## xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
@@ -326,7 +365,7 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
   )) %>%
   mutate(unl_verplichtkeuze = parse_number(unl_verplichtkeuze))
 
-## Create lookup for unl_taalvakvak
+## Create lookup for unl_taalvanvak
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
   mutate(unl_taalvanvak = case_when(
     unl_taalvanvak == "Nederlands (NL)" ~ 941790000,

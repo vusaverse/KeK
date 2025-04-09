@@ -410,12 +410,14 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
   ungroup() %>%
   unnest() %>% 
   ## minuten naar uur
-  mutate(unl_hoorcollegeurenperweekpergroep = unl_hoorcollegeurenperweekpergroep / 60)
+  mutate(unl_hoorcollegeurenperweekpergroep = unl_hoorcollegeurenperweekpergroep / 60) %>% 
+  mutate(unl_werkvorm2urenperweekpergroep = unl_werkvorm2urenperweekpergroep / 60)
 
 
 dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
   dplyr::filter(!is.na(unl_startdatum)) %>% 
-  dplyr::filter(!is.na(`unl_Opleiding@odata.bind`)) 
+  dplyr::filter(!is.na(`unl_Opleiding@odata.bind`)) %>% 
+  dplyr::filter(!is.na(unl_aantalgeslaagdeneindtoets))
 
 bbb <- send_data_to_kek(dfTT_data_entry_app2, "vaks")
 

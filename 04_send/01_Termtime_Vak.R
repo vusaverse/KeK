@@ -303,6 +303,7 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
 
 
 dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
+  dplyr::filter(!is.na(unl_startdatum)) %>% 
   dplyr::filter(!is.na(`unl_Opleiding@odata.bind`)) 
 
 bbb <- send_data_to_kek(dfTT_data_entry_app2, "vaks")

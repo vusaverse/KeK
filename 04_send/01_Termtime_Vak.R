@@ -277,6 +277,15 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
   )) %>%
   mutate(unl_verplichtkeuze = parse_number(unl_verplichtkeuze))
 
+## Create lookup for unl_taalvakvak
+dfTT_data_entry_app <- dfTT_data_entry_app %>%
+  mutate(unl_taalvanvak = case_when(
+    unl_taalvanvak == "Nederlands (NL)" ~ 941790000,
+    unl_taalvanvak == "Engels (EN)" ~ 941790001,
+    unl_taalvanvak == "Anderstalig" ~ 941790002,
+    unl_taalvanvak == "Tweetalig (Z1)" ~ 941790003,
+    TRUE ~ NA_integer_
+  ))
 
 dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
   select(

@@ -215,6 +215,13 @@ dfVAK <- dfVAK %>%
   ) %>%
   select(-INS_Opleidingscode_actueel.x, -INS_Opleidingscode_actueel.y)
 
+dfToetsen <- dfTT_activiteiten %>% filter(type %in% c("Tentamen schriftelijk",
+                                                      "Tentamen digitaal")) %>% 
+  select(moduleCode, unl_jaar) %>% 
+  distinct(moduleCode, .keep_all = TRUE) %>% 
+  mutate(unl_eindtoetsnaam = 941790006)
+
+
 
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
   mutate(jaar = parse_number(unl_jaar)) %>%
@@ -223,10 +230,19 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
     "jaar" = "UAS_Vak_Jaar"
   )) %>%
   select(
-    -jaar,
+    # -jaar,
     -ACA_Einddatum_prev,
     -UAS_Vak_Periode_einde,
-  )
+  ) %>%
+  left_join(
+    dfToetsen %>% select(moduleCode, unl_jaar, unl_eindtoetsnaam),
+    by = c("moduleCode", "unl_jaar" = "unl_jaar")
+  ) %>%
+  mutate(
+    unl_eindtoetsnaam = coalesce(unl_eindtoetsnaam.x, unl_eindtoetsnaam.y)
+  ) %>%
+  select(-unl_eindtoetsnaam.x, -unl_eindtoetsnaam.y, -jaar)
+  
 
 
 
@@ -418,6 +434,27 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
   dplyr::filter(!is.na(unl_startdatum)) %>% 
   dplyr::filter(!is.na(`unl_Opleiding@odata.bind`)) %>% 
   dplyr::filter(!is.na(unl_aantalgeslaagdeneindtoets))
+
+
+## Fix: aantal groepn 0, terwijl urenperweekpergroep > 0
+dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
+  mutate(
+    # Fix for werkvorm2
+    unl_werkvorm2groepen = if_else(
+      unl_werkvorm2urenperweekpergroep > 0 & unl_werkvorm2groepen == 0,
+      1,
+      unl_werkvorm2groepen
+    ),
+    
+    # Fix for hoorcollege
+    unl_hoorcollegegroepen = if_else(
+      unl_hoorcollegeurenperweekpergroep > 0 & unl_hoorcollegegroepen == 0,
+      1,
+      unl_hoorcollegegroepen
+    )
+  )
+
+
 
 bbb <- send_data_to_kek(dfTT_data_entry_app2, "vaks")
 

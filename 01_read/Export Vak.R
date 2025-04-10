@@ -171,6 +171,25 @@ dfVAK_validatie <- dfVAK %>%
   )
 
 
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+## Add scriptie information
+
+dfSc <- dfVAKAS %>% filter(UAS_Vak_scriptie) %>% 
+  select(UAS_Vak_Jaar, UAS_Vak_Code, UAS_Vak_scriptie, UAS_Opleiding_Fase_minimaal_generiek, UAS_Vak_Periode_start) %>% 
+  filter(!is.na(UAS_Opleiding_Fase_minimaal_generiek)) %>%
+  ## mutate case when for new variable unl_eindtoetsnaam, if UAS_Opleiding_Fase_minimaal_generiek == Bachelor then 941790000, IF 
+  ## UAS_Opleiding_Fase_minimaal_generiek == Master then 941790001
+  mutate(unl_eindtoetsnaam = case_when(
+    UAS_Opleiding_Fase_minimaal_generiek == "Bachelor" ~ 941790000,
+    UAS_Opleiding_Fase_minimaal_generiek == "Master" ~ 941790001,
+    TRUE ~ NA_real_
+  )) %>% 
+  select(UAS_Vak_Jaar, UAS_Vak_Code, unl_eindtoetsnaam, UAS_Vak_Periode_start) %>% 
+  distinct()
+
+dfVAK <- dfVAK %>% 
+  left_join(dfSc, by = c("UAS_Vak_Jaar", "UAS_Vak_Code", "UAS_Vak_Periode_start")) %>% 
+  distinct(UAS_Vak_Code, UAS_Vak_Jaar, UAS_Vak_Periode_start, Startmoment_vak, .keep_all = TRUE)
 
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

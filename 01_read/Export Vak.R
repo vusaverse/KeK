@@ -187,9 +187,32 @@ dfSc <- dfVAKAS %>% filter(UAS_Vak_scriptie) %>%
   select(UAS_Vak_Jaar, UAS_Vak_Code, unl_eindtoetsnaam, UAS_Vak_Periode_start) %>% 
   distinct()
 
+
 dfVAK <- dfVAK %>% 
   left_join(dfSc, by = c("UAS_Vak_Jaar", "UAS_Vak_Code", "UAS_Vak_Periode_start")) %>% 
   distinct(UAS_Vak_Code, UAS_Vak_Jaar, UAS_Vak_Periode_start, Startmoment_vak, .keep_all = TRUE)
+
+## Add stage information
+dfStage <- dfVAKAS %>% filter(UAS_Vak_stage) %>% 
+  select(UAS_Vak_Jaar, UAS_Vak_Code, UAS_Vak_stage, UAS_Opleiding_Fase_minimaal_generiek, UAS_Vak_Periode_start) %>%
+  filter(!is.na(UAS_Opleiding_Fase_minimaal_generiek)) %>%
+  mutate(unl_eindtoetsnaam = 941790007) %>% 
+  select(UAS_Vak_Jaar, UAS_Vak_Code, unl_eindtoetsnaam, UAS_Vak_Periode_start) %>% 
+  distinct()
+
+##' *TODO* why reallocated values?
+dfVAK <- dfVAK %>%
+  left_join(
+    dfStage %>% 
+      select(UAS_Vak_Jaar, UAS_Vak_Code, UAS_Vak_Periode_start, unl_eindtoetsnaam),
+    by = c("UAS_Vak_Jaar", "UAS_Vak_Code", "UAS_Vak_Periode_start")
+  ) %>%
+  mutate(
+    unl_eindtoetsnaam = coalesce(unl_eindtoetsnaam.y, unl_eindtoetsnaam.x)
+  ) %>%
+  select(-unl_eindtoetsnaam.x, -unl_eindtoetsnaam.y) %>% 
+  distinct(UAS_Vak_Code, UAS_Vak_Jaar, UAS_Vak_Periode_start, Startmoment_vak, .keep_all = TRUE)
+
 
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

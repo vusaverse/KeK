@@ -44,11 +44,13 @@ dfTT_summary <- dfTT_activiteiten %>%
   group_by(moduleCode, type, unl_jaar) %>%
   select(
     Gemiddelde_duur,
+    studentGroups,
     repeatOf,
     week_count
   ) %>%
   summarise(
-    groups = sum(is.na(repeatOf)),
+    # groups = sum(is.na(repeatOf)),
+    groups = n_distinct(studentGroups),
     Unique_Numbers = c(list(table(unlist(week_count)))), # totale hoeveelheid weken in een vector
     total_weken = length(Unique_Numbers[[1]]), # telling van de lengte van de vector om aantal weken te vinden
     sumweek = sum(Unique_Numbers[[1]]), # optelling van de hoeveelheid unieke weken. Omdat een vak soms meerdere keren per week gegeven wordt
@@ -63,6 +65,10 @@ dfTT_overzicht_werkvormen <- dfTT_summary %>%
   tabyl(type) %>%
   rename(aantal = n) %>%
   arrange(desc(aantal))
+
+
+
+
 
 # unique(dfTT_summary$type)
 # [1] "Hoorcollege"                        "Hertentamen digitaal"

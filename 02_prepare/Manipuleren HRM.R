@@ -116,6 +116,11 @@ KEK_HRM_compleet <- KEK_HRM_compleet %>%
   mutate(FTE_gemiddelde = case_when(Jaar == 2021 ~ FTE_gemiddelde * 2,
                                     TRUE ~ FTE_gemiddelde))
 
+## Correction negative FTE mean to 0
+KEK_HRM_compleet <- KEK_HRM_compleet %>%
+  mutate(FTE_gemiddelde = case_when(FTE_gemiddelde < 0 ~ 0,
+    TRUE ~ FTE_gemiddelde))
+    
 ## Mutate verslagjaar
 KEK_HRM_compleet <- KEK_HRM_compleet %>%
   mutate(unl_verslagjaar = Jaar)

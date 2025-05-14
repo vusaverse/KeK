@@ -9,7 +9,17 @@
 ##
 ## ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-resource <- "https://kekunltest.api.crm4.dynamics.com"
+## Set environment to test or production
+if (!exists("sKEK_environment")) {
+  sKEK_environment <- "test"
+  #sKEK_environment <- "prod"
+}
+
+## Set resource based on environment (test/production)
+resource <- case_when(sKEK_environment == "test" ~ "https://kekunltest.api.crm4.dynamics.com",
+                      sKEK_environment == "prod" ~ "https://kekunl.api.crm4.dynamics.com",
+                      TRUE ~ NA)
+
 authority <- paste0("https://login.microsoftonline.com/", Sys.getenv("KEK_TENANT_ID"), "/oauth2/token")
 
 # Prepare headers and body for the POST request

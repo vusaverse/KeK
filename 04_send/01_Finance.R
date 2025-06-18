@@ -44,7 +44,6 @@ dfKEK_FIN_data_entry_app <- dfKEK_FIN_pivot %>%
 # dfKEK_FIN_data_entry_app <- dfKEK_FIN_data_entry_app %>% 
 #   filter(unl_faculteit == "ACTA")
 
-## TODO: afronden?
 ## Alleen 1 decimaal bij volgende variabelen van dfFIN_SBE_data_entry_app:
 ## unl_overigepersonelelasten
 ## unl_afschrijvingslasten
@@ -75,7 +74,6 @@ dfKEK_FIN_data_entry_app <- dfKEK_FIN_pivot %>%
 ## Targets:unl_faculteit
 
 dffaculteit <- get_kek_data("faculteits")
-
 
 # Clean faculty names in both datasets
 dffaculteit <- dffaculteit %>%

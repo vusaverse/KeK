@@ -48,11 +48,6 @@ dfHRM_personeel_pivot <- dfHRM_personeel_pivot %>%
 # [28] "Decaan - OW"                   "Decaan - OZ"                   "Hoogleraar - VAL"
 # [31] "Promovendus - VAL"             "Student-assistent - VAL"       "Universitair docent - VAL"
 
-## TODO; Welke KeK variabele naam hoort hier bij?
-## TODO: Documentatiebestand bekijken/aan Judith vragen
-## <functie> - VAL
-## Decaan
-
 ## Pas kolomnamen aan zodat deze overeenkomen met KeK data entry app
 dfHRM_data_entry_app <- dfHRM_personeel_pivot %>%
   wrapper_translate_colnames_documentation(KeK_HRM_naming)
@@ -87,7 +82,6 @@ dffaculteit <- get_kek_data("faculteits")
 dffaculteit <- dffaculteit %>%
   mutate(clean_name = clean_faculty_name(unl_afkortingfaculteit))
 
-## TODO: check variabele unl_faculteitpersoneelid
 dfHRM_data_entry_app <- dfHRM_data_entry_app %>%
   mutate(clean_faculteit = clean_faculty_name(unl_faculteitpersoneelid))
 
@@ -132,24 +126,10 @@ dfHRM_data_entry_app <- dfHRM_data_entry_app %>%
   )
 
 ### Rang ####
-## TODO: checken rang ipv verslagjaar
+## TODO: Geen rang in data, wellicht in toekomst. 
+## Niet verplicht in DEA
 ## unl_rang = rang | Targets:unl_rangenlijst
-dfRang <- get_kek_data("rangenlijsts")
 
-dfHRM_data_entry_app <- dfHRM_data_entry_app %>%
-  mutate(
-    `unl_Verslagjaar@odata.bind` = sapply(unl_verslagjaar, function(year) {
-      match <- dfkalenderjaar %>%
-        filter(unl_name == year) %>%
-        pull(unl_kalenderjaarid)
-      
-      if (length(match) > 0) {
-        paste0("unl_kalenderjaars(", match, ")")
-      } else {
-        NA_character_
-      }
-    })
-  )
 
 ### Verslagjaar ####
 ## unl_verslagjaar = verslagjaar | Targets:unl_kalenderjaar
@@ -170,6 +150,8 @@ dfHRM_data_entry_app <- dfHRM_data_entry_app %>%
       }
     })
   )
+
+
 
 ## Lege variabelen toevoegen (anders geen totale berekeningen in DEA)
 dfHRM_data_entry_app <- dfHRM_data_entry_app %>% 

@@ -112,6 +112,7 @@ dfVAK <- dfVAKAS %>%
     # Werkvorm 2 Aantal personen OBP
 
     UAS_Groep_Groepstype,
+    UAS_Groep_College_jaar,
     UAS_Vak_Opleidingsnaam_eigenaar,
     UAS_Vak_Opleidingscode_eigenaar,
     ## TERMTIME?

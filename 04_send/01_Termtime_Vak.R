@@ -248,7 +248,7 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
     unl_eindtoetsnaam = coalesce(unl_eindtoetsnaam.x, unl_eindtoetsnaam.y)
   ) %>%
   select(-unl_eindtoetsnaam.x, -unl_eindtoetsnaam.y, -jaar)
-  
+
 
 
 
@@ -256,6 +256,17 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
 KeK_termtime_naming <- read_documentation(
   "Documentatie_KeK_TermTime_API.csv"
 )
+
+## case_when empty UAS_Groep_Groepstype useUAS_Groep_College_jaar
+dfTT_data_entry_app <- dfTT_data_entry_app %>%
+  ungroup() %>% 
+  mutate(
+    UAS_Groep_Groepstype = case_when(
+      is.na(UAS_Groep_Groepstype) | UAS_Groep_Groepstype == "" ~ as.character(UAS_Groep_College_jaar),
+      TRUE ~ UAS_Groep_Groepstype
+    )
+  )
+
 
 ## Pas kolomnamen aan zodat deze overeenkomen met KeK data entry app
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
@@ -331,7 +342,7 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
       match <- dfcolleges %>%
         filter(unl_name == year) %>%
         pull(unl_collegejaarid)
-
+      
       if (length(match) > 0) {
         paste0("unl_collegejaars(", match, ")")
       } else {
@@ -343,11 +354,19 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
 
 dfopleidings <- get_kek_data("opleidings")
 
+## extract unl_jaar column from  unl_name  , example: ""M Computational Science (joint degree) 2019-2020" --> "2019-2020" 
+dfopleidings_enriched <- dfopleidings %>% 
+  mutate(
+    unl_jaar = str_extract(unl_name, "\\d{4}-\\d{4}$")
+  )
+
+
+
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
   rowwise() %>%
   mutate(
     `unl_Opleiding@odata.bind` = {
-      match <- dfopleidings %>%
+      match <- dfopleidings_enriched %>%
         filter(unl_opleidingscodeisat == INS_Opleidingscode_actueel) %>%
         pull(unl_opleidingid)
       
@@ -387,8 +406,8 @@ werkvorm_lookup <- c(
 # Function to map werkvorm names to codes
 map_werkvorm_to_code <- function(werkvorm) {
   ifelse(werkvorm %in% names(werkvorm_lookup),
-    werkvorm_lookup[werkvorm],
-    NA_integer_
+         werkvorm_lookup[werkvorm],
+         NA_integer_
   )
 }
 
@@ -462,7 +481,7 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
 
 
 
-bbb <- send_data_to_kek(dfTT_data_entry_app2, "vaks")
+# bbb <- send_data_to_kek(dfTT_data_entry_app2, "vaks")
 
 
 clear_script_objects()

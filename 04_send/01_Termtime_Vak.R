@@ -37,7 +37,8 @@ dfTT_activiteiten$durationmin <- sapply(dfTT_activiteiten$events, unpack_duratio
 
 ## Bereken de gemiddelde duur van een werkvorm over de weken uit de events subtabel
 dfTT_activiteiten <- dfTT_activiteiten %>%
-  mutate(Gemiddelde_duur = map_dbl(durationmin, ~ if (length(.x) > 0) mean(.x) else NA))
+  mutate(Gemiddelde_duur = map_dbl(durationmin, ~ if (length(.x) > 0) mean(.x) else NA)) %>% 
+  filter(!is.na(Gemiddelde_duur))
 
 ## Summarize to create a new column with unique numbers
 dfTT_summary <- dfTT_activiteiten %>%
@@ -54,7 +55,7 @@ dfTT_summary <- dfTT_activiteiten %>%
     Unique_Numbers = c(list(table(unlist(week_count)))), # totale hoeveelheid weken in een vector
     total_weken = length(Unique_Numbers[[1]]), # telling van de lengte van de vector om aantal weken te vinden
     sumweek = sum(Unique_Numbers[[1]]), # optelling van de hoeveelheid unieke weken. Omdat een vak soms meerdere keren per week gegeven wordt
-    totale_duur_per_groep_per_week = mean(Gemiddelde_duur), # gemiddelde duur over de weken dat een werkvorm gegeven wordt.
+    totale_duur_per_groep_per_week = mean(Gemiddelde_duur), # gemiddelde duur over de weken dat een werkvorm gegeven wordt in minuten.
     totale_contact_uren = (sumweek * totale_duur_per_groep_per_week) / 60
   ) %>%
   select(-sumweek, -Unique_Numbers)
@@ -110,7 +111,8 @@ dfTT_type_werkvorm <- dfTT_summary %>%
 
 ## Kolommen sorteren zodat deze overeenkomen met excel import template van de Data Entry App
 ## TODO: verbeteren
-dfTT_data_entry_app <- dfTT_type_werkvorm[, c(1, 2, 8, 14, 20, 3, 9, 15, 21, 4, 10, 16, 22, 5, 11, 17, 23, 6, 12, 18, 24, 7, 13, 19, 25)]
+# dfTT_data_entry_app2 <- dfTT_type_werkvorm[, c(1, 2, 8, 14, 20, 3, 9, 15, 21, 4, 10, 16, 22, 5, 11, 17, 23, 6, 12, 18, 24, 7, 13, 19, 25)]
+dfTT_data_entry_app <- dfTT_type_werkvorm
 
 ## Pas kolomnamen aan ####
 # names(dfTT_data_entry_app)

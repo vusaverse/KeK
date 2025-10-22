@@ -67,30 +67,12 @@ dfTT_overzicht_werkvormen <- dfTT_summary %>%
   rename(aantal = n) %>%
   arrange(desc(aantal))
 
-
-
-
-
-# unique(dfTT_summary$type)
-# [1] "Hoorcollege"                        "Hertentamen digitaal"
-# [3] "Tentamen digitaal - Extra tijd"     "Tentamen schriftelijk"
-# [5] "Tentamen schriftelijk - Extra tijd" "Werkcollege"
-# [7] "Werkgroep"                          "Practicum"
-# [9] "Tentamen digitaal"                  "Hertentamen schriftelijk"
-# [11] "Computerpracticum"                  "Excursie"
-# [13] "Deeltentamen schriftelijk"          "Veldwerk"
-# [15] "Overig"                             "Deeltentamen digitaal"
-# [17] "Symposium"                          "Training"
-# [19] "Lecture"                            "Toets"
-# [21] "Studiegroep"                        "Instructiecollege"
-# [23] "GNK Stationstoets"
-
 ## Filter op type werkvorm & pivot
 ## TODO: select type werkvorm
 dfTT_type_werkvorm <- dfTT_summary %>%
   mutate(type = case_when(
     type %in% c("Hoorcollege", "Lecture") ~ "Hoorcollege",
-    type %in% c("Wercollege", "Instructiecollege") ~ "Werk/instructiecollege",
+    type %in% c("Werkcollege", "Instructiecollege") ~ "Werk/instructiecollege",
     type %in% c("Practicum", "Computerpracticum", "training") ~ "Practicum/Lab",
     type == "Werkgroep" ~ "Groepsopdracht (geroosterde begeleiding)",
     type %in% c("Excursie", "Veldwerk", "Symposium") ~ "Excursie",
@@ -114,21 +96,6 @@ dfTT_type_werkvorm <- dfTT_summary %>%
 # dfTT_data_entry_app2 <- dfTT_type_werkvorm[, c(1, 2, 8, 14, 20, 3, 9, 15, 21, 4, 10, 16, 22, 5, 11, 17, 23, 6, 12, 18, 24, 7, 13, 19, 25)]
 dfTT_data_entry_app <- dfTT_type_werkvorm
 
-## Pas kolomnamen aan ####
-# names(dfTT_data_entry_app)
-# [1] "moduleCode"                                       "groups_Hoorcollege"
-# [3] "total_weken_Hoorcollege"                          "totale_duur_per_groep_per_week_Hoorcollege"
-# [5] "totale_contact_uren_Hoorcollege"                  "groups_Werkcollege"
-# [7] "total_weken_Werkcollege"                          "totale_duur_per_groep_per_week_Werkcollege"
-# [9] "totale_contact_uren_Werkcollege"                  "groups_Werkgroep"
-# [11] "total_weken_Werkgroep"                            "totale_duur_per_groep_per_week_Werkgroep"
-# [13] "totale_contact_uren_Werkgroep"                    "groups_Practicum"
-# [15] "total_weken_Practicum"                            "totale_duur_per_groep_per_week_Practicum"
-# [17] "totale_contact_uren_Practicum"                    "groups_Excursie"
-# [19] "total_weken_Excursie"                             "totale_duur_per_groep_per_week_Excursie"
-# [21] "totale_contact_uren_Excursie"                     "groups_Instructiecollege"
-# [23] "total_weken_Instructiecollege"                    "totale_duur_per_groep_per_week_Instructiecollege"
-# [25] "totale_contact_uren_Instructiecollege"
 
 ##' TODO:
 ##' code faculteit uit termtime behouden (departmentCode)
@@ -273,22 +240,6 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
 ## Pas kolomnamen aan zodat deze overeenkomen met KeK data entry app
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
   wrapper_translate_colnames_documentation(KeK_termtime_naming)
-
-## names(dfTT_data_entry_app)
-# [1] "unl_vakcode"                        "unl_hoorcollegegroepen"
-# [3] "unl_hoorcollegeaantalweken"         "unl_hoorcollegeurenperweekpergroep"
-# [5] "unl_hoorcollegetotaalcontacturen"   "unl_werkcollegegroepen"
-# [7] "unl_werkollegeaantalweken"          "unl_werkcollegeurenperweekpergroep"
-# [9] "unl_werkcollegetotaalcontacturen"   "unl_werkvorm1groepen"
-# [11] "unl_werkvorm1aantalweken"           "unl_werkvorm1urenperweekpergroep"
-# [13] "unl_werkvorm1totaalcontacturen"     "unl_practicumgroepen"
-# [15] "unl_practicumaantalweken"           "unl_practicumurenperweekpergroep"
-# [17] "unl_practicumtotaalcontacturen"     "unl_werkvorm2groepen"
-# [19] "unl_werkvorm2aantalweken"           "unl_werkvorm2urenperweekpergroep"
-# [21] "unl_werkvorm2totaalcontacturen"     "unl_werkvorm3groepen"
-# [23] "unl_werkvorm3aantalweken"           "unl_werkvorm3urenperweekpergroep"
-# [25] "unl_werkvorm3totaalcontacturen"     "unl_werkvorm1naam"
-# [27] "unl_werkvorm2naam"                  "unl_werkvorm3naam"
 
 
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -488,8 +439,6 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
 dfDoelgroep <- readrds_csv(output = "20. Test/dfdoelgroep.csv") %>% 
   filter(UAS_Vak_Jaar == 2021)
 
-dfTT_data_entry_app2 %>% filter(is.na(unl_vakjaar)) %>% dim
-# [1] 1110   26
 
 
 dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
@@ -505,7 +454,7 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
   ) %>%
   select(-unl_vak_jaar_code)
 
-dfTT_data_entry_app2 %>% filter(is.na(unl_vakjaar)) %>% dim
+
 
 # bbb <- send_data_to_kek(dfTT_data_entry_app2, "vaks")
 

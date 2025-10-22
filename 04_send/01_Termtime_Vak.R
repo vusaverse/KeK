@@ -481,7 +481,31 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
     )
   )
 
+##' TEMP and hardcoded...
+##' 
+##' attempt to fill missing unl_eindtoetsnaam with filled dfToetsvormen variable toetsvorm_code 
+##' 
+dfDoelgroep <- readrds_csv(output = "20. Test/dfdoelgroep.csv") %>% 
+  filter(UAS_Vak_Jaar == 2021)
 
+dfTT_data_entry_app2 %>% filter(is.na(unl_vakjaar)) %>% dim
+# [1] 1110   26
+
+
+dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
+  left_join(
+    dfDoelgroep %>%
+      select(Code, unl_vak_jaar_code) %>%
+      distinct(),
+    by = c("unl_vakcode" = "Code")
+  ) %>%
+  mutate(
+    # coalesce unl_vakjaar with unl_vak_jaar_code from lookup, preferring original if present
+    unl_vakjaar = coalesce(unl_vakjaar, unl_vak_jaar_code)
+  ) %>%
+  select(-unl_vak_jaar_code)
+
+dfTT_data_entry_app2 %>% filter(is.na(unl_vakjaar)) %>% dim
 
 # bbb <- send_data_to_kek(dfTT_data_entry_app2, "vaks")
 

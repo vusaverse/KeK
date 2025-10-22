@@ -454,9 +454,17 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
   ) %>%
   select(-unl_vak_jaar_code)
 
+## We are not allowed to send unl_eindtoetsnaam 941700009, change all these into 941700005
+dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
+  mutate(
+    unl_eindtoetsnaam = case_when(
+      unl_eindtoetsnaam == 941790009 ~ 941790005,
+      unl_eindtoetsnaam == 941790010 ~ 941790005,
+      TRUE ~ unl_eindtoetsnaam
+    )
+  )
 
-
-# bbb <- send_data_to_kek(dfTT_data_entry_app2, "vaks")
+bbb <- send_data_to_kek(dfTT_data_entry_app2, "vaks")
 
 
 clear_script_objects()

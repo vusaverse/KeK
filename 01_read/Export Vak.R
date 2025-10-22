@@ -110,7 +110,7 @@ dfVAK <- dfVAKAS %>%
     # Werkvorm 1 Aantal personen OBP
     # Werkvorm 2 Aantal personen WP
     # Werkvorm 2 Aantal personen OBP
-
+    
     UAS_Groep_Groepstype,
     UAS_Groep_College_jaar,
     UAS_Vak_Opleidingsnaam_eigenaar,
@@ -128,7 +128,7 @@ dfVAK <- dfVAKAS %>%
     # Aantal deelnemers toets 2
     # Toetsvorm 3
     # Aantal deelnemers toets 3
-
+    
     ## VUDATA ODW012?
     count_afgesloten # Aantal geslaagden vak
   ) %>%
@@ -215,7 +215,33 @@ dfVAK <- dfVAK %>%
   distinct(UAS_Vak_Code, UAS_Vak_Jaar, UAS_Vak_Periode_start, Startmoment_vak, .keep_all = TRUE)
 
 
+##' attempt to fill missing unl_eindtoetsnaam with filled dfToetsvormen variable toetsvorm_code 
+##' 
+dfToetsvormen <- readrds_csv(output = "20. Test/dftoetsvorm.csv") %>% 
+  mutate(toetsvorm_code = as.integer(toetsvorm_code))
 
+dfVAK %>% filter(is.na(unl_eindtoetsnaam)) %>% dim
+# [1] 18691    23
+
+dfVAK <- dfVAK %>% 
+  left_join(
+    dfToetsvormen %>%
+      select(
+        UAS_Vak_Jaar,
+        Code,
+        toetsvorm_code
+      ) %>%
+      distinct(),
+    by = c("UAS_Vak_Jaar", "UAS_Vak_Code" = "Code")
+  ) %>%
+  mutate(
+    unl_eindtoetsnaam = coalesce(toetsvorm_code, unl_eindtoetsnaam)
+  ) %>%
+  select(-toetsvorm_code) %>%
+  distinct(UAS_Vak_Code, UAS_Vak_Jaar, UAS_Vak_Periode_start, Startmoment_vak, .keep_all = TRUE)
+
+dfVAK %>% filter(is.na(unl_eindtoetsnaam)) %>% dim
+# [1] 9931   23
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ## BEWAAR & RUIM OP ####
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

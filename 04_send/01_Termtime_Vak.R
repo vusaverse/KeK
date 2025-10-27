@@ -396,6 +396,8 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
 dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
   select(
     -unl_werkvorm2totaalcontacturen,
+    -unl_werkvorm1totaalcontacturen,
+    -unl_werkvorm3totaalcontacturen,
     # -unl_werkvorm3naam,
     -unl_jaar,
     -INS_Opleidingscode_actueel,
@@ -406,7 +408,9 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
   unnest() %>% 
   ## minuten naar uur
   mutate(unl_hoorcollegeurenperweekpergroep = unl_hoorcollegeurenperweekpergroep / 60) %>% 
-  mutate(unl_werkvorm2urenperweekpergroep = unl_werkvorm2urenperweekpergroep / 60)
+  mutate(unl_werkvorm1urenperweekpergroep = unl_werkvorm1urenperweekpergroep / 60) %>% 
+  mutate(unl_werkvorm2urenperweekpergroep = unl_werkvorm2urenperweekpergroep / 60) %>% 
+  mutate(unl_werkvorm3urenperweekpergroep = unl_werkvorm3urenperweekpergroep / 60)
 
 
 dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%

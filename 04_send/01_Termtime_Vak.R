@@ -219,7 +219,8 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
   select(-unl_eindtoetsnaam.x, -unl_eindtoetsnaam.y, -jaar)
 
 
-
+## assign per werkvorm name
+source("04_send/99_helper_werkvormen.R")
 
 ## Lees documentatie in
 KeK_termtime_naming <- read_documentation(

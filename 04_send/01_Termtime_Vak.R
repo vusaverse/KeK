@@ -321,7 +321,7 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
   mutate(
     `unl_Opleiding@odata.bind` = {
       match <- dfopleidings_enriched %>%
-        filter(unl_opleidingscodeisat == INS_Opleidingscode_actueel) %>%
+        filter(unl_opleidingscodeisat == INS_Opleidingscode_actueel, unl_jaar == "2021-2022") %>%
         pull(unl_opleidingid)
       
       if (length(match) > 0) {

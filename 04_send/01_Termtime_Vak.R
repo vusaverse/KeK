@@ -71,9 +71,11 @@ dfTT_overzicht_werkvormen <- dfTT_summary %>%
 ## TODO: select type werkvorm
 dfTT_type_werkvorm <- dfTT_summary %>%
   mutate(type = case_when(
+    ## vaste vormen
     type %in% c("Hoorcollege", "Lecture") ~ "Hoorcollege",
     type %in% c("Werkcollege", "Instructiecollege") ~ "Werk/instructiecollege",
     type %in% c("Practicum", "Computerpracticum", "training") ~ "Practicum/Lab",
+    ## vormen 1, 2, 3
     type == "Werkgroep" ~ "Groepsopdracht (geroosterde begeleiding)",
     type %in% c("Excursie", "Veldwerk", "Symposium") ~ "Excursie",
     type == "Studiegroep" ~ "Groepsopdracht (niet geroosterde begeleiding)",
@@ -142,6 +144,11 @@ long_df <- dfTT_data_entry_app %>%
 
 # Step 3: Rank werkvormen by duration for each moduleCode and unl_jaar
 ranked_df <- long_df %>%
+  filter(werkvorm %in% c(
+    "Groepsopdracht (geroosterde begeleiding)",
+    "Excursie",
+    "Groepsopdracht (niet geroosterde begeleiding)"
+  )) %>% 
   group_by(moduleCode, unl_jaar) %>%
   filter(!is.na(totale_duur_per_groep_per_week)) %>% # Remove rows with NA durations
   arrange(desc(totale_duur_per_groep_per_week), .by_group = TRUE) %>% # Sort by duration
@@ -408,6 +415,8 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
   unnest() %>% 
   ## minuten naar uur
   mutate(unl_hoorcollegeurenperweekpergroep = unl_hoorcollegeurenperweekpergroep / 60) %>% 
+  mutate(unl_werkcollegeurenperweekpergroep = unl_werkcollegeurenperweekpergroep / 60) %>% 
+  mutate(unl_practicumurenperweekpergroep = unl_practicumurenperweekpergroep / 60) %>%
   mutate(unl_werkvorm1urenperweekpergroep = unl_werkvorm1urenperweekpergroep / 60) %>% 
   mutate(unl_werkvorm2urenperweekpergroep = unl_werkvorm2urenperweekpergroep / 60) %>% 
   mutate(unl_werkvorm3urenperweekpergroep = unl_werkvorm3urenperweekpergroep / 60)
@@ -459,15 +468,6 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
   ) %>%
   select(-unl_vak_jaar_code)
 
-## We are not allowed to send unl_eindtoetsnaam 941700009, change all these into 941700005
-dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
-  mutate(
-    unl_eindtoetsnaam = case_when(
-      unl_eindtoetsnaam == 941790009 ~ 941790005,
-      unl_eindtoetsnaam == 941790010 ~ 941790005,
-      TRUE ~ unl_eindtoetsnaam
-    )
-  )
 
 bbb <- send_data_to_kek(dfTT_data_entry_app2, "vaks")
 

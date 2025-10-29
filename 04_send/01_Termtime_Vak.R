@@ -323,16 +323,41 @@ dfopleidings <- get_kek_data("opleidings")
 dfopleidings_enriched <- dfopleidings %>% 
   mutate(
     unl_jaar = str_extract(unl_name, "\\d{4}-\\d{4}$")
+  ) %>% 
+  filter(unl_jaar %in% c(
+    "2021-2022",
+    "2022-2023",
+    "2023-2024",
+    "2024-2025"
+  )  
   )
 
 
+
+# dfTT_data_entry_app_test <- dfTT_data_entry_app %>%
+#   rowwise() %>%
+#   mutate(
+#     `unl_Opleiding@odata.bind` = {
+#       match <- dfopleidings_enriched %>%
+#         filter(unl_opleidingscodeisat == INS_Opleidingscode_actueel, unl_jaar == unl_jaar) %>%
+#         pull(unl_opleidingid)
+#       
+#       if (length(match) > 0) {
+#         paste0("unl_opleidings(", match[1], ")")
+#       } else {
+#         NA_character_
+#       }
+#     }
+#   ) %>%
+#   ungroup()
 
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
   rowwise() %>%
   mutate(
     `unl_Opleiding@odata.bind` = {
+      current_unl_jaar <- unl_jaar
       match <- dfopleidings_enriched %>%
-        filter(unl_opleidingscodeisat == INS_Opleidingscode_actueel, unl_jaar == "2021-2022") %>%
+        filter(unl_opleidingscodeisat == INS_Opleidingscode_actueel, unl_jaar == current_unl_jaar) %>%
         pull(unl_opleidingid)
       
       if (length(match) > 0) {
@@ -343,6 +368,7 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
     }
   ) %>%
   ungroup()
+
 
 
 
@@ -410,7 +436,7 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
     -unl_werkvorm1totaalcontacturen,
     -unl_werkvorm3totaalcontacturen,
     # -unl_werkvorm3naam,
-    -unl_jaar,
+    # -unl_jaar,
     -INS_Opleidingscode_actueel,
     # -`unl_Collegejaar@odata.bind`,
     -unl_hoorcollegetotaalcontacturen
@@ -455,22 +481,25 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
 ##' attempt to fill missing unl_eindtoetsnaam with filled dfToetsvormen variable toetsvorm_code 
 ##' 
 dfDoelgroep <- readrds_csv(output = "20. Test/dfdoelgroep.csv") %>% 
-  filter(UAS_Vak_Jaar == 2021)
+  filter(UAS_Vak_Jaar >= 2021) %>% 
+  mutate(UAS_Vak_Jaar = paste(UAS_Vak_Jaar, as.character(as.numeric(UAS_Vak_Jaar) + 1), sep = "-")) %>% 
+  distinct()
 
 
 
 dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
+  distinct(unl_vakcode, unl_jaar, .keep_all = TRUE) %>%
   left_join(
     dfDoelgroep %>%
-      select(Code, unl_vak_jaar_code) %>%
+      select(Code, unl_vak_jaar_code, UAS_Vak_Jaar) %>%
       distinct(),
-    by = c("unl_vakcode" = "Code")
+    by = c("unl_vakcode" = "Code", "unl_jaar" = "UAS_Vak_Jaar"), relationship = "one-to-one"
   ) %>%
   mutate(
     # coalesce unl_vakjaar with unl_vak_jaar_code from lookup, preferring original if present
     unl_vakjaar = coalesce(unl_vakjaar, unl_vak_jaar_code)
   ) %>%
-  select(-unl_vak_jaar_code)
+  select(-unl_vak_jaar_code, -unl_jaar)
 
 
 bbb <- send_data_to_kek(dfTT_data_entry_app2, "vaks")

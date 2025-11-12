@@ -201,6 +201,20 @@ dfVAK <- dfVAK %>%
   ) %>%
   select(-INS_Opleidingscode_actueel.x, -INS_Opleidingscode_actueel.y)
 
+## Fill missing period information:
+dfVAK <- dfVAK %>%
+  group_by(UAS_Vak_Code) %>%
+  fill(UAS_Vak_Periode_start, UAS_Vak_Periode_einde, .direction = "downup") %>%
+  ungroup()
+
+
+dfVAK <- dfVAK %>%
+  group_by(UAS_Vak_Jaar, UAS_Vak_Periode_start) %>%
+  fill(Startmoment_vak, ACA_Einddatum, ACA_Einddatum_prev, .direction = "downup") %>%
+  ungroup() %>% 
+  mutate(weeks_diff = round(as.numeric(difftime(ACA_Einddatum, Startmoment_vak, units = "weeks")))) 
+
+
 dfToetsen <- dfTT_activiteiten %>% filter(type %in% c("Tentamen schriftelijk",
                                                       "Tentamen digitaal")) %>% 
   select(moduleCode, unl_jaar) %>% 
@@ -482,13 +496,19 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
 ##' 
 dfDoelgroep <- readrds_csv(output = "20. Test/dfdoelgroep.csv") %>% 
   filter(UAS_Vak_Jaar >= 2021) %>% 
-  mutate(UAS_Vak_Jaar = paste(UAS_Vak_Jaar, as.character(as.numeric(UAS_Vak_Jaar) + 1), sep = "-")) %>% 
+  mutate(UAS_Vak_Jaar = as.character(UAS_Vak_Jaar),
+         UAS_Vak_Jaar = paste0(UAS_Vak_Jaar, "-", as.numeric(UAS_Vak_Jaar) + 1))
+
+dfDoelgroep <- dfDoelgroep %>%
+  group_by(Code) %>%  # group only by 'Code'
+  arrange(UAS_Vak_Jaar, .by_group = TRUE) %>%  # order by year for each code
+  fill(unl_vak_jaar_code, .direction = "downup") %>%  # fill missing values down then up
+  ungroup() %>% 
   distinct()
 
 
-
 dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
-  distinct(unl_vakcode, unl_jaar, .keep_all = TRUE) %>%
+  distinct(unl_vakcode, unl_jaar, .keep_all = TRUE) %>% 
   left_join(
     dfDoelgroep %>%
       select(Code, unl_vak_jaar_code, UAS_Vak_Jaar) %>%
@@ -498,11 +518,43 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
   mutate(
     # coalesce unl_vakjaar with unl_vak_jaar_code from lookup, preferring original if present
     unl_vakjaar = coalesce(unl_vakjaar, unl_vak_jaar_code)
-  ) %>%
+  ) 
+
+dfTT_data_entry_app3 <- dfTT_data_entry_app2 %>%
+  # Fill toetsnaam (unl_eindtoetsnaam) from previous year if missing
+  group_by(unl_vakcode, unl_name) %>%
+  arrange(unl_jaar, .by_group = TRUE) %>%
+  mutate(unl_eindtoetsnaam = ifelse(
+    is.na(unl_eindtoetsnaam),
+    lag(unl_eindtoetsnaam, order_by = unl_jaar),
+    unl_eindtoetsnaam
+  )) %>%
+  ungroup() %>%
+  # If EC's are NA, remove toetsing (unl_eindtoetsnaam)
+  mutate(unl_eindtoetsnaam = ifelse(
+    is.na(unl_ecs),
+    NA,
+    unl_eindtoetsnaam
+  )) %>%
+  # Default to "schriftelijke toetsing" if eindtoetsnaam still missing and ECS exists
+  mutate(unl_eindtoetsnaam = ifelse(
+    is.na(unl_eindtoetsnaam) & !is.na(unl_ecs),
+    941790006,
+    unl_eindtoetsnaam
+  )) %>%
+  # Fill Verplicht/Keuze (unl_verplichtkeuze) from previous year
+  group_by(unl_vakcode, unl_name) %>%
+  arrange(unl_jaar, .by_group = TRUE) %>%
+  mutate(unl_verplichtkeuze = ifelse(
+    is.na(unl_verplichtkeuze),
+    lag(unl_verplichtkeuze, order_by = unl_jaar),
+    unl_verplichtkeuze
+  )) %>%
+  ungroup() %>%
   select(-unl_vak_jaar_code, -unl_jaar)
 
 
-bbb <- send_data_to_kek(dfTT_data_entry_app2, "vaks")
+bbb <- send_data_to_kek(dfTT_data_entry_app3, "vaks")
 
 
 clear_script_objects()

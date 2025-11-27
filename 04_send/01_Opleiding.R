@@ -129,6 +129,11 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
     )
   ) %>%
   mutate(unl_opleidingscodeisat = as.character(unl_opleidingscodeisat)) %>%
+  group_by(unl_opleidingnaam, unl_opleidingscodeisat) %>%
+  mutate(unl_graad = if_else(is.na(unl_graad), 
+                             first(unl_graad[!is.na(unl_graad)]), 
+                             unl_graad)) %>%
+  ungroup() %>%
   select(
     -unl_taalvanopleiding,
     -OPL_Code_actueel

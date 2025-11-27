@@ -143,9 +143,9 @@ clean_faculty_name <- function(name) {
   name %>%
     str_to_lower() %>%
     str_remove("^vu\\s*-\\s*") %>%
-    str_trim()
+    str_trim() %>%
+    str_replace("^acta$", "thk")
 }
-
 
 
 convert_to_academic_year <- function(year) {

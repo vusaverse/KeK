@@ -120,7 +120,7 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
       unl_vorm == "VOLTIJD" ~ 1,
       unl_vorm == "DEELTIJD" ~ 2,
       unl_vorm == "DUAAL" ~ 3,
-      TRUE ~ NA_real_
+      TRUE ~ 1
     ),
     unl_graad = case_when(
       unl_graad == "B" ~ 1,

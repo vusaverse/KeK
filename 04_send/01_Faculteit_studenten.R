@@ -13,6 +13,11 @@ dfFac_Studenten <- read_file_proj("KEK_Faculteit_studenten", dir = "1. Ingelezen
 
 dfKeK_FAC_studenten <- get_kek_data(endpoint = "faculteitstudentens")
 
+
+dfFac_Studenten_ENHANCED <- dfFac_Studenten %>% 
+  mutate(total_B = `B-EER` + `B-NIET-EER` + `B-NL`, 
+         total_M = `M-EER` + `M-NIET-EER` + `M-NL`)
+
 ## Lees documentatie in
 KeK_Faculteit_studenten_naming <- read_documentation(
   "Documentatie_KeK_FAC_studenten_API.csv"
@@ -23,7 +28,7 @@ KeK_Faculteit_studenten_naming <- read_documentation(
 ##' No clean faculty in endpoint
 
 ## Pas kolomnamen aan zodat deze overeenkomen met KeK data entry app
-dfFac_Studenten2 <- dfFac_Studenten %>%
+dfFac_Studenten2 <- dfFac_Studenten_ENHANCED %>%
   wrapper_translate_colnames_documentation(KeK_Faculteit_studenten_naming)
 
 
@@ -89,7 +94,9 @@ dfFac_Studenten2 <- dfFac_Studenten2 %>%
       NA_character_
     }
   })) %>%
-  select(-clean_faculteit, -unl_faculteit)
+  select(-clean_faculteit, -unl_faculteit) %>% 
+  filter(!is.na(`unl_Faculteit@odata.bind`)) %>% 
+  filter(!is.na(`unl_Collegejaar@odata.bind`))
 
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

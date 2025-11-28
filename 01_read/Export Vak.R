@@ -59,7 +59,8 @@ dfResultaten_koppeling <- dfResultaten %>%
   summarise(
     total_students = n(),
     count_afgesloten = sum(RES_Boekingsstatus_omschrijving == "Afgesloten"),
-    count_zondersucces = sum(RES_Boekingsstatus_omschrijving == "Zondersuccesbeëindigd")
+    count_zondersucces = sum(RES_Boekingsstatus_omschrijving == "Zondersuccesbeëindigd"),
+    count_with_result = sum(!is.na(RES_Beoordeling))
   ) %>%
   distinct()
 

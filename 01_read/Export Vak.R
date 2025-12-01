@@ -131,6 +131,7 @@ dfVAK <- dfVAKAS %>%
     # Aantal deelnemers toets 3
     
     ## VUDATA ODW012?
+    count_with_result,
     count_afgesloten # Aantal geslaagden vak
   ) %>%
   filter(!is.na(UAS_Vak_Naam_NL)) %>%

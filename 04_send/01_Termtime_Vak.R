@@ -247,25 +247,7 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
 ## assign per werkvorm name
 source("04_send/99_helper_werkvormen.R")
 
-## Lees documentatie in
-KeK_termtime_naming <- read_documentation(
-  "Documentatie_KeK_TermTime_API.csv"
-)
 
-## case_when empty UAS_Groep_Groepstype useUAS_Groep_College_jaar
-dfTT_data_entry_app <- dfTT_data_entry_app %>%
-  ungroup() %>% 
-  mutate(
-    UAS_Groep_Groepstype = case_when(
-      is.na(UAS_Groep_Groepstype) | UAS_Groep_Groepstype == "" ~ as.character(UAS_Groep_College_jaar),
-      TRUE ~ UAS_Groep_Groepstype
-    )
-  )
-
-
-## Pas kolomnamen aan zodat deze overeenkomen met KeK data entry app
-dfTT_data_entry_app <- dfTT_data_entry_app %>%
-  wrapper_translate_colnames_documentation(KeK_termtime_naming)
 
 
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

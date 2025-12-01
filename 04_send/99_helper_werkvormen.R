@@ -74,3 +74,60 @@ dfTT_data_entry_app <- df
 #   starts_with("duration_per_group_per_week_"),
 #   starts_with("contact_hours_")
 # )
+
+
+## case_when empty UAS_Groep_Groepstype useUAS_Groep_College_jaar
+dfTT_data_entry_app <- dfTT_data_entry_app %>%
+  ungroup() %>% 
+  mutate(
+    UAS_Groep_Groepstype = case_when(
+      is.na(UAS_Groep_Groepstype) | UAS_Groep_Groepstype == "" ~ as.character(UAS_Groep_College_jaar),
+      TRUE ~ UAS_Groep_Groepstype
+    )
+  )
+
+## Lees documentatie in
+KeK_termtime_naming <- read_documentation(
+  "Documentatie_KeK_TermTime_API.csv"
+)
+
+
+## Pas kolomnamen aan zodat deze overeenkomen met KeK data entry app
+dfTT_data_entry_app <- dfTT_data_entry_app %>%
+  wrapper_translate_colnames_documentation(KeK_termtime_naming)
+
+
+#' Makes sure that the werkvormnaam becomes null if the other variables are empty for that werkvorm
+
+# helper: TRUE als een list-column element echt leeg/NULL is
+is_empty_list <- function(x) {
+  map_lgl(x, ~ is.null(.x) || length(.x) == 0)
+}
+
+clear_werkvorm_name <- function(df, n) {
+  groepen_col   <- paste0("unl_werkvorm", n, "groepen")
+  weken_col     <- paste0("unl_werkvorm", n, "aantalweken")
+  uren_col      <- paste0("unl_werkvorm", n, "urenperweekpergroep")
+  totaal_col    <- paste0("unl_werkvorm", n, "totaalcontacturen")
+  naam_col      <- paste0("unl_werkvorm", n, "naam")
+  
+  df %>%
+    mutate(
+      # test: alle bijbehorende list-kolommen leeg/NULL?
+      all_empty_werkvorm = if_all(
+        all_of(c(groepen_col, weken_col, uren_col, totaal_col)),
+        is_empty_list
+      ),
+      !!naam_col := if_else(
+        all_empty_werkvorm,
+        NA_character_,
+        !!sym(naam_col)
+      )
+    ) %>%
+    select(-all_empty_werkvorm)
+}
+
+dfTT_data_entry_app <- dfTT_data_entry_app %>%
+  clear_werkvorm_name(1) %>%
+  clear_werkvorm_name(2) %>%
+  clear_werkvorm_name(3)

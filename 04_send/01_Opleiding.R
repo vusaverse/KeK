@@ -135,10 +135,20 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
                              unl_graad)) %>%
   ungroup() %>%
   select(
-    -unl_taalvanopleiding,
     -OPL_Code_actueel
   ) %>% 
   distinct()
+
+## Language fixes
+dfTT_data_entry_app3 <- dfTT_data_entry_app2 %>%
+  dplyr::mutate(
+    unl_taalvanopleiding = dplyr::case_when(
+      unl_taalvanopleiding %in% c("Nederlands", "Nederlands/Engels") ~ 941790000L,
+      unl_taalvanopleiding == "Engels"                               ~ 941790001L,
+      is.na(unl_taalvanopleiding)                                    ~ NA_integer_,
+      TRUE                                                           ~ 941790002L
+    )
+  )
 
 
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -146,6 +156,6 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-bbb <- send_data_to_kek(dfTT_data_entry_app2, "opleidings")
+bbb <- send_data_to_kek(dfTT_data_entry_app3, "opleidings")
 
 clear_script_objects()

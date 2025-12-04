@@ -42,6 +42,10 @@ dfOpleidingen_test <- dfOPLAS %>%
   ) %>%
   distinct()
 
+##' *TEMP* -----------------------------------------------------------------------------------------
+##' We will send for now only years 2022, 2023 and 2024 to production
+dfOpleidingen_test <- dfOpleidingen_test %>% 
+  filter(INS_Inschrijvingsjaar %in% c(2022, 2023, 2024))
 
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ##' Voorbereiden wegschrijven naar API
@@ -154,7 +158,6 @@ dfTT_data_entry_app3 <- dfTT_data_entry_app2 %>%
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ## X. Send POST ####
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 
 bbb <- send_data_to_kek(dfTT_data_entry_app3, "opleidings")
 

@@ -9,10 +9,12 @@
 ##
 ## ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+##' *NOTE*
+##' Be careful with changing this variable
 ## Set environment to test or production
 if (!exists("sKEK_environment")) {
-  sKEK_environment <- "test"
-  #sKEK_environment <- "prod"
+  # sKEK_environment <- "test"
+  sKEK_environment <- "prod"
 }
 
 ## Set resource based on environment (test/production)

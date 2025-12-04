@@ -447,11 +447,21 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
   mutate(unl_werkvorm2urenperweekpergroep = unl_werkvorm2urenperweekpergroep / 60) %>% 
   mutate(unl_werkvorm3urenperweekpergroep = unl_werkvorm3urenperweekpergroep / 60)
 
-
+##' *TODO* 
+##' LOSES A LOT OF ENTRIES -------------------------------------------------------------------------
+##' 
 dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
-  dplyr::filter(!is.na(unl_startdatum)) %>% 
-  dplyr::filter(!is.na(`unl_Opleiding@odata.bind`)) %>% 
-  dplyr::filter(!is.na(unl_aantalgeslaagdeneindtoets))
+  dplyr::group_by(unl_vakcode) %>%
+  dplyr::mutate(
+    `unl_Opleiding@odata.bind` =
+      dplyr::coalesce(`unl_Opleiding@odata.bind`,
+                      first(na.omit(`unl_Opleiding@odata.bind`)))
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::filter(!is.na(unl_startdatum)) %>%
+  dplyr::filter(!is.na(unl_aantalgeslaagdeneindtoets)) %>% 
+  dplyr::filter(!is.na(`unl_Opleiding@odata.bind`))
+
 
 
 ## Fix: aantal groepn 0, terwijl urenperweekpergroep > 0

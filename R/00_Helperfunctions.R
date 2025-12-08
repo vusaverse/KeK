@@ -28,9 +28,18 @@ get_kek_data <- function(endpoint, token = Sys.getenv("KEK_ACCESS_TOKEN")) {
     ))
   }
 
+  if (!sKEK_environment %in% c("prod", "test")) {
+    stop("sKEK_environment must be either 'prod' or 'test'")
+  }
+  
+  if (sKEK_environment == "prod") {
+    base_url <- "https://kekunl.api.crm4.dynamics.com/api/data/v9.2/"
+  } else {
+    base_url <- "https://kekunltest.api.crm4.dynamics.com/api/data/v9.2/"
+  }
+  
   # Construct the URL
   # Remove test in URL for production
-  base_url <- "https://kekunl.api.crm4.dynamics.com/api/data/v9.2/"
   url <- paste0(base_url, "unl_", endpoint)
 
   # Make the GET request
@@ -81,9 +90,19 @@ send_data_to_kek <- function(data, endpoint, access_token = Sys.getenv("KEK_ACCE
     ))
   }
 
+  if (!sKEK_environment %in% c("prod", "test")) {
+    stop("sKEK_environment must be either 'prod' or 'test'")
+  }
+  
+  if (sKEK_environment == "prod") {
+    base_url <- "https://kekunl.api.crm4.dynamics.com/api/data/v9.2/"
+  } else {
+    base_url <- "https://kekunltest.api.crm4.dynamics.com/api/data/v9.2/"
+  }
+  
+  
   # Construct the URL
   # Remove test in URL for production
-  base_url <- "https://kekunl.api.crm4.dynamics.com/api/data/v9.2/"
   url <- paste0(base_url, "unl_", endpoint)
 
   # Set up headers

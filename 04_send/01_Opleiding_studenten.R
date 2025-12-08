@@ -51,9 +51,18 @@ get_kek_data2 <- function(endpoint, token = Sys.getenv("KEK_ACCESS_TOKEN")) {
       "\nValid endpoints are:", paste(valid_endpoints, collapse = ", ")
     ))
   }
+  
+  if (!sKEK_environment %in% c("prod", "test")) {
+    stop("sKEK_environment must be either 'prod' or 'test'")
+  }
+  
+  if (sKEK_environment == "prod") {
+    base_url <- "https://kekunl.api.crm4.dynamics.com/api/data/v9.2/"
+  } else {
+    base_url <- "https://kekunltest.api.crm4.dynamics.com/api/data/v9.2/"
+  }
 
   # Construct the URL
-  base_url <- "https://kekunltest.api.crm4.dynamics.com/api/data/v9.2/"
   url <- paste0(base_url, "unl_", endpoint)
 
   # Make the GET request

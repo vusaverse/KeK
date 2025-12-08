@@ -2,6 +2,8 @@
 
 This repository contains scripts for the KeK (Kwaliteit en Kosten) project of UNL (Universiteiten van Nederland).
 
+> In 00_project/authenticate_kek.R set the appropriate environment (test or prod).
+
 # Project Goals
 
 - Retrieve data from the KeK database

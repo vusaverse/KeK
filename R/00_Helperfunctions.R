@@ -81,6 +81,13 @@ send_data_to_kek <- function(data, endpoint, access_token = Sys.getenv("KEK_ACCE
     "opleidingpersoneels", "opleidingstudentens", "vaks", "vakrangenpertoetsingvorms",
     "vakrangenperwerkvorms", "vakwerkvorms", "universiteits"
   )
+  
+  response <- readline(paste0("you are currently authenticated with ", sKEK_environment, "environment, is this okay? (y/n): "))
+  
+  if (tolower(response) != "y") {
+    stop("Do not send data for now")
+  }
+    
 
   # Check if the endpoint is valid
   if (!endpoint %in% valid_endpoints) {

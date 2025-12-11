@@ -154,6 +154,14 @@ dfTT_data_entry_app3 <- dfTT_data_entry_app2 %>%
     )
   )
 
+## Not necessary for us, but numeric value is required. As discussed with Judith Lenting.
+dfTT_data_entry_app3 <- dfTT_data_entry_app3 %>% 
+  dplyr::mutate(
+    unl_ecsexternestudentenverleend = 0,
+    unl_ecseigenstudentenelders = 0,
+    unl_vergoedingperecbetaalt = 0,
+    unl_vergoedingperecontvangt = 0
+  )
 
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ## X. Send POST ####

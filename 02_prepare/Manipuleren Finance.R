@@ -52,7 +52,7 @@ dfKEK_FIN_compleet <- dfKEK_FIN %>%
     Toewijzing
   ) %>% 
   filter(Year == "YTD Realisatie vorig jaar" |
-           case_when(Jaar == 2023 ~ Year == "YTD Realisatie")) %>% 
+           case_when(Jaar == max(Jaar) ~ Year == "YTD Realisatie")) %>% 
   ungroup() %>% 
   group_by(
     Faculteit,

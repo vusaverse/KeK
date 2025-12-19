@@ -50,6 +50,11 @@ slackr_setup(
   echo = FALSE
 )
 
+KeK_metadata <- vvmover::read_excel_allsheets(
+  paste0(Sys.getenv("NETWORK_DIR"), "Datasets/KeK/table_summary_v2.0.xlsx")
+)
+
+
 ## Set DEFAULT_KEEP_LIST environment variable
 object_names <- ls(envir = .GlobalEnv)
 

@@ -103,16 +103,6 @@ dfTT_type_werkvorm <- dfTT_summary %>%
 dfTT_data_entry_app <- dfTT_type_werkvorm
 
 
-##' TODO:
-##' code faculteit uit termtime behouden (departmentCode)
-##' haal uit termtime
-##'
-api_key <- Sys.getenv("TERMTIME_KEY_2425")
-base_url <- "https://www.ttportalvu1.com/"
-termtime <- vvtermtime::authenticate(api_key, base_url)
-df_termtime_faculteiten <- vvtermtime::get_departments(termtime)
-
-
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ## Get werkvormen ####
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -20,14 +20,12 @@
 ##' Het toevoegen van Jaar in het onderliggende script
 ##' Voor nu een temp fix
 ##' LET OP: unl_jaar is een LookUp field
-dfTT_activiteiten <- readrds_csv(output = "20. Test/TT_Activiteit_data.rds")
-
-dfTT_activiteiten <- dfTT_activiteiten %>%
-  filter(unl_jaar == "2021-2022")
+dfTT_activiteiten_2021 <- readrds_csv(output = "20. Test/TT_Activiteit_data.rds") %>% 
+  mutate(unl_jaar = "2021-2022")
 
 dfTT_activiteiten_years <- readrds_csv(output = "20. Test/TT_Activiteit_data_all_years.rds")
 
-dfTT_activiteiten <- dfTT_activiteiten %>% 
+dfTT_activiteiten <- dfTT_activiteiten_2021 %>% 
   bind_rows(dfTT_activiteiten_years)
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

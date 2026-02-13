@@ -1,0 +1,102 @@
+# Download configuration for Education Analytics project
+# This file documents all download sources and their types (SFTP, API, URL, etc.)
+# Example structure:
+downloads:
+  mivu:
+    type: sftp
+    sftp_dir: mivu/
+    description: MIVU raw data from SFTP server
+    datasets:
+      ODW202:
+        name: ODW202
+        container: aanmeldingen
+        directory:
+      ODW203:
+        name: ODW203
+        container: raw
+        directory: Inschrijvingen
+      ODW204:
+        name: ODW204
+        container: raw
+        directory: Cohorten
+      ODW205:
+        name: ODW205
+        container: raw
+        directory: Inschrijvingen
+      ODW206:
+        name: ODW206
+        container: raw
+        directory: Vooropleidingen
+      ODW208:
+        name: ODW208
+        container: raw
+        directory: Inschrijvingen
+      ODW209:
+        name: ODW209
+        container: raw
+        directory: SAP_Opleidingen
+      ODW210:
+        name: ODW210
+        container: raw
+        directory: Vakintekeningen
+      ODW211:
+        name: ODW211
+        container: raw
+        directory: Vakintekeningen
+      ODW214:
+        name: ODW214
+        container: raw
+        directory: DUO_Bekostiging
+      ODW215:
+        name: ODW215
+        container: raw
+        directory: Vakintekeningen
+      ODW220:
+        name: ODW220
+        container: raw
+        directory: Studielink
+  sapslm:
+    type: sftp
+    sftp_dir: sapslm/in/
+    description: SAP SLM raw data from SFTP server
+    datasets:
+      sapslm:
+        name: sapslm
+        container: raw
+        directory: Sapslm
+  selligent:
+    type: sftp
+    sftp_dir: selligent/
+    description: Selligent raw data from SFTP server
+    datasets:
+      selligent:
+        name: selligent
+        container: raw
+        directory: Selligent
+  novusoft:
+    type: sftp
+    sftp_dir: novusoft/
+    description: Novusoft raw data from SFTP server
+    datasets:
+      novusoft:
+        name: novusoft
+        container: raw
+        directory: Novusoft
+  evalytics:
+    type: sftp
+    sftp_dir: evalytics/
+    description: Evalytics raw data from SFTP server
+    datasets:
+      evalytics:
+        name: evalytics
+        container: raw
+        directory: Evalytics
+  studiekeuzedatabase:
+    type: api
+    description: Studiekeuzedata from api
+    datasets:
+      studiekeuzedatabase:
+        name: studiekeuzedatabase
+        container: raw
+        directory: Studiekeuzedatabase
+# Add more download sources as needed

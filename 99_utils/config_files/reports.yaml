@@ -1,0 +1,24 @@
+reports:
+  kwaliteitszorg_aanmeldingen:
+    metadata:
+      description: "Aanmeldingen data for kwaliteitszorg Dashboard"
+      source: "bronze"
+      update_frequency: "daily"
+    naming:
+      dataset_name: "AAN_Aanmeldingen_VUDATA"
+
+  kwaliteitszorg_inschrijvingen:
+    metadata:
+      description: "Instroom and inschrijvingen for kz"
+      source: "bronze"
+      update_frequency: "daily"
+    naming:
+      dataset_name: "INS_Inschrijvingen_1CHO"
+
+  kwaliteitszorg_opleidingen:
+    metadata:
+      description: "Opleidingen data for kz"
+      source: "silver"
+      update_frequency: "daily"
+    naming:
+      dataset_name: "OLAP_Opleidingen"

@@ -1,0 +1,22 @@
+# azure_storage.yaml
+
+azure_storage:
+  dev:
+    account: "eaprodstorage"
+    containers:
+      aanmeldingen: "aanmeldingen"
+      bronze: "dev-bronze"
+      gold: "dev-gold"
+      raw: "raw"
+      silver: "dev-silver"
+      export: "export-dumps"
+
+  prod:
+    account: "eaprodstorage"
+    containers:
+      aanmeldingen: "aanmeldingen"
+      bronze: "bronze"
+      gold: "gold"
+      raw: "raw"
+      silver: "silver"
+      export: "export-dumps"

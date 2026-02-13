@@ -1,0 +1,40 @@
+# olap.yaml
+# Contains only the olap section from config.yaml
+
+olap:
+  inschrijvingen:
+    metadata:
+      description: "OLAP data for inschrijvingen"
+    join_sources:
+      - inschrijvingen_sap
+      - inschrijvingen_1cho
+
+  opleidingen:
+    metadata:
+      description: "OLAP data for opleidingen"
+      source: "OLAP server"
+      update_frequency: "daily"
+    paths:
+      mapping:
+        cluster: "Mapping_Opleidingen_cluster.csv"
+        instructietaal: "Mapping_Opleidingen_instructietaal.csv"
+        numerus_fixus: "Mapping_Opleidingen_numerusfixus.csv"
+    naming:
+      dataset_name: "OLAP_Opleidingen"
+    join_sources:
+      - uas_opleidingen
+      - sap_opleidingen
+      - cbs_croho
+      - sectoren_ho
+
+  resultaten:
+    metadata:
+      description: "OLAP data for resultaten"
+    join_sources:
+      - resultaten
+
+  vakken:
+    metadata:
+      description: "OLAP data for vak-jaar"
+    join_sources:
+      - uas_vakken

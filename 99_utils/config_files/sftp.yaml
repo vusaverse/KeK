@@ -1,0 +1,7 @@
+# SFTP server configuration for Education Analytics project
+sftp:
+  host: "Studentanalytics.sftp.vu.nl"
+  port: 22
+  user: "tkr231"
+  privatefile: "99_utils/.ssh/sa_rsa"
+  publickey: "99_utils/.ssh/sa_rsa.pub"

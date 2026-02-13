@@ -1,0 +1,13 @@
+# environments.yaml
+# Contains only the environments section from config.yaml
+
+environments:
+  dev:
+    blob_container: "dev-container"
+    blob_storage_account: "devstorageaccount"
+    logging_level: "DEBUG"
+
+  prod:
+    blob_container: "prod-container"
+    blob_storage_account: "prodstorageaccount"
+    logging_level: "INFO"

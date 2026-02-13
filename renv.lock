@@ -9,6 +9,11 @@
     ]
   },
   "Packages": {
+    "AzureStor": {
+      "Package": "AzureStor",
+      "Version": "3.7.1",
+      "Source": "Repository"
+    },
     "devtools": {
       "Package": "devtools",
       "Version": "2.4.5",

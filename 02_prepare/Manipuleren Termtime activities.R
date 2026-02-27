@@ -242,8 +242,9 @@ dfTT_type_werkvorm <- dfTT_type_werkvorm %>%
 
 
 ## assign per werkvorm name
-source("04_send/99_helper_werkvormen.R")
+source("99_utils/helper_functions/99_helper_werkvormen.R")
 
+dfTT_type_werkvorm <- helper_werkvormen(dfTT_type_werkvorm)
 
 
 

@@ -23,6 +23,36 @@ modular_assign <- function(df2, col_base, source_map, name_col) {
   return(df2)
 }
 
+# helper: TRUE als een list-column element echt leeg/NULL is
+is_empty_list <- function(x) {
+  map_lgl(x, ~ is.null(.x) || length(.x) == 0)
+}
+
+clear_werkvorm_name <- function(df, n) {
+  groepen_col   <- paste0("unl_werkvorm", n, "groepen")
+  weken_col     <- paste0("unl_werkvorm", n, "aantalweken")
+  uren_col      <- paste0("unl_werkvorm", n, "urenperweekpergroep")
+  totaal_col    <- paste0("unl_werkvorm", n, "totaalcontacturen")
+  naam_col      <- paste0("unl_werkvorm", n, "naam")
+  
+  df %>%
+    mutate(
+      # test: alle bijbehorende list-kolommen leeg/NULL?
+      all_empty_werkvorm = if_all(
+        all_of(c(groepen_col, weken_col, uren_col, totaal_col)),
+        is_empty_list
+      ),
+      !!naam_col := if_else(
+        all_empty_werkvorm,
+        NA_character_,
+        !!sym(naam_col)
+      )
+    ) %>%
+    select(-all_empty_werkvorm)
+}
+
+
+
 helper_werkvormen <- function(df) {
   
   # Source lookups for each category:
@@ -79,7 +109,7 @@ helper_werkvormen <- function(df) {
   
   ## Lees documentatie in
   KeK_termtime_naming <- read_documentation(
-    "Documentatie_KeK_TermTime_API.csv"
+    "Documentatie_KeK_TermTime_API_new.csv"
   )
   
   
@@ -90,33 +120,7 @@ helper_werkvormen <- function(df) {
   
   #' Makes sure that the werkvormnaam becomes null if the other variables are empty for that werkvorm
   
-  # helper: TRUE als een list-column element echt leeg/NULL is
-  is_empty_list <- function(x) {
-    map_lgl(x, ~ is.null(.x) || length(.x) == 0)
-  }
-  
-  clear_werkvorm_name <- function(df, n) {
-    groepen_col   <- paste0("unl_werkvorm", n, "groepen")
-    weken_col     <- paste0("unl_werkvorm", n, "aantalweken")
-    uren_col      <- paste0("unl_werkvorm", n, "urenperweekpergroep")
-    totaal_col    <- paste0("unl_werkvorm", n, "totaalcontacturen")
-    naam_col      <- paste0("unl_werkvorm", n, "naam")
-    
-    df %>%
-      mutate(
-        # test: alle bijbehorende list-kolommen leeg/NULL?
-        all_empty_werkvorm = if_all(
-          all_of(c(groepen_col, weken_col, uren_col, totaal_col)),
-          is_empty_list
-        ),
-        !!naam_col := if_else(
-          all_empty_werkvorm,
-          NA_character_,
-          !!sym(naam_col)
-        )
-      ) %>%
-      select(-all_empty_werkvorm)
-  }
+ 
   
   df <- df %>%
     clear_werkvorm_name(1) %>%

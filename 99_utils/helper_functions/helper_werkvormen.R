@@ -85,7 +85,7 @@ helper_werkvormen <- function(df) {
   
   ## Pas kolomnamen aan zodat deze overeenkomen met KeK data entry app
   df <- df %>%
-    wrapper_translate_colnames_documentation(KeK_termtime_naming, drop_na = FALSE)
+    wrapper_translate_colnames_documentation(KeK_termtime_naming)
   
   
   #' Makes sure that the werkvormnaam becomes null if the other variables are empty for that werkvorm

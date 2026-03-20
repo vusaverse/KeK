@@ -59,7 +59,6 @@ dfTT_summary <- dfTermtime_activities %>%
     week_vector
   ) %>%
   summarise(
-    # groups = sum(is.na(repeatOf)),
     n_unique_student_groups = n_distinct(ter_student_groups),
     week_counts = c(list(table(unlist(week_vector)))), # telling van weken per weeknummer
     n_unique_weeks = length(week_counts[[1]]), # telling van de lengte van de vector om aantal unieke weken te vinden
@@ -79,7 +78,7 @@ dfTT_overzicht_werkvormen <- dfTT_summary %>%
 
 
 ## Filter op type werkvorm & pivot
-## TODO: select type werkvorm
+## TODO: select type werkvorm properly. 
 dfTT_type_werkvorm <- dfTT_summary %>%
   mutate(ter_type = case_when(
     ## vaste vormen
@@ -242,7 +241,7 @@ dfTT_type_werkvorm <- dfTT_type_werkvorm %>%
 
 
 ## assign per werkvorm name
-source("99_utils/helper_functions/99_helper_werkvormen.R")
+source("99_utils/helper_functions/helper_werkvormen.R")
 
 dfTT_type_werkvorm <- helper_werkvormen(dfTT_type_werkvorm)
 

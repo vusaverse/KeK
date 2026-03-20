@@ -147,6 +147,8 @@ ranked_df <- dfTT_type_werkvorm_long %>%
     "Excursie",
     "Groepsopdracht (niet geroosterde begeleiding)"
   )) %>% 
+  ## TODO are we sure we need to rank this by module? Later on in the documentation we seem to assign
+  ## specific werkvormen to the numbers, so shouldnt the numbers be consistent across the data
   group_by(ter_module_code, unl_jaar) %>%
   filter(!is.na(gemiddelde_duur_per_groep_per_week)) %>% # Remove rows with NA durations
   arrange(desc(gemiddelde_duur_per_groep_per_week), .by_group = TRUE) %>% # Sort by duration
@@ -245,5 +247,14 @@ source("99_utils/helper_functions/helper_werkvormen.R")
 
 dfTT_type_werkvorm <- helper_werkvormen(dfTT_type_werkvorm)
 
+
+upload_file_to_azure_blob_storage(
+  storage_account,
+  sas_token = Sys.getenv("SAS_Token"),
+  container_name ="finance",
+  data = dfTT_type_werkvorm,
+  dataset_name = "KeK/Termtime_vakdata",
+  file_type = "rds"
+)
 
 

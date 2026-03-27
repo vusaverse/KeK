@@ -76,7 +76,8 @@
       bronze_container = azure_storage[[env]]$containers$bronze,
       silver_container = azure_storage[[env]]$containers$silver,
       gold_container = azure_storage[[env]]$containers$gold,
-      export_container = azure_storage[[env]]$containers$export
+      export_container = azure_storage[[env]]$containers$export,
+      finance_container = azure_storage[[env]]$containers$finance
     ),
     common_paths = list(
       documentation_local = config$common_paths$documentation$local,

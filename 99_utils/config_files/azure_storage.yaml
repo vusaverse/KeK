@@ -10,6 +10,7 @@ azure_storage:
       raw: "raw"
       silver: "dev-silver"
       export: "export-dumps"
+      finance: "finance"
 
   prod:
     account: "eaprodstorage"
@@ -20,3 +21,4 @@ azure_storage:
       raw: "raw"
       silver: "silver"
       export: "export-dumps"
+      finance: "finance"

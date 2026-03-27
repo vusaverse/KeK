@@ -249,7 +249,7 @@ dfTT_type_werkvorm <- helper_werkvormen(dfTT_type_werkvorm)
 
 
 upload_file_to_azure_blob_storage(
-  storage_account,
+  "eaprodstorage",
   sas_token = Sys.getenv("SAS_Token"),
   container_name ="finance",
   data = dfTT_type_werkvorm,

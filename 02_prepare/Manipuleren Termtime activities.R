@@ -248,6 +248,10 @@ source("99_utils/helper_functions/helper_werkvormen.R")
 dfTT_type_werkvorm <- helper_werkvormen(dfTT_type_werkvorm)
 
 
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+## Save
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 upload_file_to_azure_blob_storage(
   "eaprodstorage",
   sas_token = Sys.getenv("SAS_Token"),
@@ -257,4 +261,4 @@ upload_file_to_azure_blob_storage(
   file_type = "rds"
 )
 
-
+clear_script_objects()

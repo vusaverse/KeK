@@ -56,17 +56,19 @@ dfTT_summary <- dfTermtime_activities %>%
     Gemiddelde_duur,
     ter_student_groups,
     ter_repeat_of,
-    week_vector
+    week_vector,
+    durationmin
   ) %>%
   summarise(
     n_unique_student_groups = n_distinct(ter_student_groups),
     week_counts = c(list(table(unlist(week_vector)))), # telling van weken per weeknummer
     n_unique_weeks = length(week_counts[[1]]), # telling van de lengte van de vector om aantal unieke weken te vinden
     nActivities = sum(week_counts[[1]]), # optelling van de hoeveelheid  weken. Omdat een vak soms meerdere keren per week gegeven wordt
-    gemiddelde_duur_per_groep_per_week = mean(Gemiddelde_duur), # gemiddelde duur over de weken dat een werkvorm gegeven wordt in minuten.
-    totale_contacturen = (nActivities * gemiddelde_duur_per_groep_per_week) / contactuur_duration
+    totale_duur_rij = sum(unlist(durationmin)),
+    gemiddelde_duur_per_groep_per_week =  totale_duur_rij/ n_unique_weeks, # gemiddelde duur over de weken dat een werkvorm gegeven wordt in minuten.
+    totale_contacturen = totale_duur_rij / contactuur_duration
   ) %>%
-  select(-nActivities, -week_counts) 
+  select(-c(nActivities, week_counts, totale_duur_rij)) 
 
 ## Maak overzicht type werkvormen
 ## VU

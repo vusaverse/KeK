@@ -6,22 +6,12 @@ dfTT_data_entry_app <- load_rds_from_azure(
   file_name = "KeK/Termtime_vakdata.rds"
 )
 
-dfTT_data_entry_app <- dfTT_type_werkvorm
+
 
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ## update unl_vakjaar ####
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-dfTT_data_entry_app <- dfTT_data_entry_app %>% 
-  distinct(unl_vakcode, unl_jaar, .keep_all = TRUE) %>% 
-  dplyr::left_join(
-    dfID,
-    by = c(
-      "unl_vakcode",
-      "unl_jaar"
-    ),
-    relationship = "one-to-one"
-  )
 
 # Create lookup vector (right-hand values map to left-hand codes)
 vakjaar_lookup <- c(

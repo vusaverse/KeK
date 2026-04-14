@@ -89,23 +89,6 @@ dfopleidings_enriched <- dfopleidings %>%
 
 
 
-# dfTT_data_entry_app_test <- dfTT_data_entry_app %>%
-#   rowwise() %>%
-#   mutate(
-#     `unl_Opleiding@odata.bind` = {
-#       match <- dfopleidings_enriched %>%
-#         filter(unl_opleidingscodeisat == INS_Opleidingscode_actueel, unl_jaar == unl_jaar) %>%
-#         pull(unl_opleidingid)
-#       
-#       if (length(match) > 0) {
-#         paste0("unl_opleidings(", match[1], ")")
-#       } else {
-#         NA_character_
-#       }
-#     }
-#   ) %>%
-#   ungroup()
-
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
   rowwise() %>%
   mutate(
@@ -217,10 +200,29 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
                       first(na.omit(`unl_Opleiding@odata.bind`)))
   ) %>%
   dplyr::ungroup() %>%
-  dplyr::filter(!is.na(unl_startdatum)) %>%
-  dplyr::filter(!is.na(unl_aantalgeslaagdeneindtoets)) %>% 
+  #dplyr::filter(!is.na(unl_startdatum)) %>%
+  #dplyr::filter(!is.na(unl_aantalgeslaagdeneindtoets)) #%>% 
   dplyr::filter(!is.na(`unl_Opleiding@odata.bind`))
 
+## add vak guid
+dfvaks <-  get_kek_data("vaks")
+
+dfUNLvakid <- dfvaks %>% 
+  dplyr::select(
+    unl_vakcode,
+    unl_vakid
+    ) %>% 
+  dplyr::distinct(
+    unl_vakcode,
+    .keep_all = TRUE
+  )
+
+dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>% 
+  dplyr::left_join(
+    dfUNLvakid,
+    by = "unl_vakcode",
+    relationship = "many-to-one"
+  )
 
 
 ## Fix: aantal groepn 0, terwijl urenperweekpergroep > 0

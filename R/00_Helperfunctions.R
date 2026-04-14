@@ -41,25 +41,40 @@ get_kek_data <- function(endpoint, token = Sys.getenv("KEK_ACCESS_TOKEN")) {
   # Construct the URL
   # Remove test in URL for production
   url <- paste0(base_url, "unl_", endpoint)
+  result_df <- tibble::tibble()
+  i <- 1
 
-  # Make the GET request
-  response <- httr::GET(
-    url = url,
-    httr::add_headers("Authorization" = paste("Bearer", token))
-  )
+  ## Keep loading while there is still new rows available outside of 5000 row limit in api
+  while (!is.null(url)) {
+    # Make the GET request
+    response <- httr::GET(
+      url = url,
+      httr::add_headers("Authorization" = paste("Bearer", token))
+    )
+  
+    # Check for HTTP errors
+    httr::stop_for_status(response)
+    
+    # Process the response
+    response_json <- response %>%
+      httr::content("text") %>%
+      jsonlite::fromJSON()
+    
+    ## Get new paginated url
+    url <- response_json$`@odata.nextLink`
+    
+    response_df <- response_json %>%
+      as.data.frame() %>%
+      select(starts_with("value.unl_")) %>%
+      rename_with(~ str_remove(., "value."))
+    
+    result_df <- result_df %>% 
+      bind_rows(response_df)
+    print(paste0("Page number: ", i, ". Obtained total of ", nrow(result_df), " records."))
+    i <- i + 1
+  }
 
-  # Check for HTTP errors
-  httr::stop_for_status(response)
-
-  # Process the response
-  df <- response %>%
-    httr::content("text") %>%
-    jsonlite::fromJSON() %>%
-    as.data.frame() %>%
-    select(starts_with("value.unl_")) %>%
-    rename_with(~ str_remove(., "value."))
-
-  return(df)
+  return(result_df)
 }
 
 

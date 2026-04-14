@@ -10,6 +10,10 @@
 .connect_to_azure_keyvault <- function(vault_url) {
   vault <- AzureKeyVault::key_vault(vault_url)
   tryCatch({
+    vault <- AzureKeyVault::key_vault(
+      vault_url,
+      auth_type = "device_code"
+    )
     ## Check if the test key can be accessed
     vault$secrets$get("test")
   }, error = function(e) {

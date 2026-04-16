@@ -63,6 +63,10 @@ get_kek_data <- function(endpoint, token = Sys.getenv("KEK_ACCESS_TOKEN")) {
     ## Get new paginated url
     url <- response_json$`@odata.nextLink`
     
+    if (length(response_json$value) == 0) {
+      print("Response is empty. Returning empty df.")
+      return(result_df)
+    }
     response_df <- response_json %>%
       as.data.frame() %>%
       select(starts_with("value.unl_")) %>%

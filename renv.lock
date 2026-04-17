@@ -9,6 +9,16 @@
     ]
   },
   "Packages": {
+    "AzureKeyVault": {
+      "Package": "AzureKeyVault",
+      "Version": "1.0.6",
+      "Source": "Repository"
+    },
+    "AzureStor": {
+      "Package": "AzureStor",
+      "Version": "3.7.1",
+      "Source": "Repository"
+    },
     "devtools": {
       "Package": "devtools",
       "Version": "2.4.5",

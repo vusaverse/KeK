@@ -1,0 +1,484 @@
+# datasets.yaml
+# Contains only the datasets section from config.yaml
+
+datasets:
+  aanmeldingen:
+    metadata:
+      description: "Student enrollment data from VUDATA"
+      source: "MIVU SFTP VU BI"
+      update_frequency: "daily"
+    paths:
+      file_pattern: "ODW202 - VUanalytics Aanmeldingen"
+    naming:
+      dataset_name: "AAN_Aanmeldingen_VUDATA"
+      prefix: "ODW_"
+    etl_script:
+      repo_path: "01_ETL/Aanmeldingen_VUDATA.R"
+
+  bsa:
+    metadata:
+      description: "BSA data from SAP-SLM"
+      source: "SAP SLM sftp server"
+      update_frequency: "monthly"
+    paths:
+      file_pattern: "BSA"
+    naming:
+      dataset_name: "BSA"
+      prefix: "SAP_"
+    etl_script:
+      repo_path: "01_ETL/BSA.R"
+
+  canvas_lms:
+    metadata:
+      description: "Course and user activity data from Canvas LMS"
+      source: "Canvas LMS API"
+      update_frequency: "daily"
+    paths:
+      file_pattern: "Canvas"
+    naming:
+      dataset_name: "Canvas_LMS"
+      prefix: "CAN_"
+    etl_script:
+      repo_path: "01_ETL/Canvas.R"
+
+  cbs_croho:
+    metadata:
+      description: "CBS CROHO classification data - Central Register of Higher Education"
+      source: "CBS Excel export"
+      update_frequency: "yearly"
+    paths:
+      file_pattern: "crohocode"
+    naming:
+      dataset_name: "CBS_CROHO"
+      prefix: "CBS_"
+    etl_script:
+      repo_path: "01_ETL/CBS_CROHO.R"
+
+  cohorten_sap:
+    metadata:
+      description: "Cohorten data from SAP"
+      source: "MIVU sftp server"
+      update_frequency: "yearly"
+    paths:
+      file_pattern: "ODW204"
+      column_mapping: "doc/column_mapping/cohorten_sap.csv"
+    naming:
+      dataset_name: "Cohorten_SAP"
+      prefix: "ODW_"
+    etl_script:
+      repo_path: "01_ETL/Cohorten_SAP.R"
+
+  cohorten_unl:
+    metadata:
+      description: "UNL Cohorten data for student analytics"
+      source: "MIVU 1cHO UNL"
+      update_frequency: "yearly"
+    paths:
+      column_mapping: "doc/column_mapping/cohorten_unl.csv"
+      file_pattern: "EOIcohort_UNL"
+    naming:
+      dataset_name: "INS_Cohorten_UNL"
+      prefix: "UNL_"
+    etl_script:
+      repo_path: "01_ETL/Cohorten_UNL.R"
+
+  duo_bekostiging:
+    metadata:
+      description: "DUO bekostiging data"
+      source: "DUO"
+      update_frequency: "yearly"
+    paths:
+      file_pattern: "bekost_([0-9]{4})definitief.csv"
+    naming:
+      dataset_name: "DUO_Bekostiging"
+      prefix: "DUO_"
+    etl_script:
+      repo_path: "01_ETL/DUO_Bekostiging.R"
+
+  duo_instellingsprognose:
+    metadata:
+      description: "Instellingsprognose based on referentieramingen"
+      source: "DUO"
+      update_frequency: "yearly"
+    paths:
+      file_pattern: "studentenprognoses-([0-9]{4}).xlsx"
+    naming:
+      dataset_name: "DUO_Instellingsprognose"
+      prefix: "DUO_"
+    etl_script:
+      repo_path: "01_ETL/DUO_Instellingsprognose.R"
+
+  evalytics:
+    metadata:
+      description: "Course evaluation data from Evalytics system"
+      source: "VU-SFTP server evalytics/"
+      update_frequency: "weekly"
+      has_download_stage: true
+    paths:
+      file_pattern: "Evalytics"
+      column_mapping: "doc/column_mapping/evalytics_evaluation.csv"
+    naming:
+      dataset_name: "EVA_Evalytics"
+      prefix: "EVA_"
+    etl_script:
+      repo_path: "01_ETL/Evalytics.R"
+
+  functiebeperking_sap:
+    metadata:
+      description: "Student functional limitation/disability data from SAP"
+      source: "SAP SLM SFTP server"
+      update_frequency: "monthly"
+    paths:
+      file_pattern: "Functiebeperking"
+    naming:
+      dataset_name: "DIS_Functiebeperking_SAP"
+      prefix: "SAP_"
+    etl_script:
+      repo_path: "01_ETL/Functiebeperking_SAP.R"
+
+  geslaagden_unl:
+    metadata:
+      description: "Graduate cohort data from UNL (Universities of the Netherlands)"
+      source: "1cHO cohort files"
+      update_frequency: "yearly"
+    paths:
+      column_mapping: "doc/column_mapping/geslaagden_unl.csv"
+      file_pattern: "Gediplomeerdencohort_UNL"
+    naming:
+      dataset_name: "INS_Geslaagden_UNL"
+      prefix: "UNL_"
+    etl_script:
+      repo_path: "01_ETL/Geslaagden_UNL.R"
+
+  inschrijvingen_1cho:
+    metadata:
+      description: "Student enrollment data from 1cHO"
+      source: "MIVU SFTP VU BI"
+      update_frequency: "yearly"
+    paths:
+      file_pattern: "ODW205"
+      column_mapping: "doc/column_mapping/inschrijvingen_1cho.csv"
+    naming:
+      dataset_name: "INS_Inschrijvingen_1CHO"
+      prefix: "ODW_"
+    etl_script:
+      repo_path: "01_ETL/Inschrijvingen_1cHO.R"
+
+  inschrijvingen_sap:
+    metadata:
+      description: "Student enrollment data from SAP"
+      source: "MIVU SFTP VU BI"
+      update_frequency: "daily"
+    paths:
+      file_pattern: "ODW203 - VUanalytics Inschrijvingen"
+    naming:
+      dataset_name: "INS_Inschrijvingen_SAP"
+      prefix: "ODW_"
+    etl_script:
+      repo_path: "01_ETL/Inschrijvingen_SAP.R"
+
+  nae:
+    metadata:
+      description: "Nationale Alumni Enquête (NAE)"
+      source: "Centerdata"
+      update_frequency: "bi-yearly"
+    paths:
+      file_pattern: "NAE"
+    naming:
+      dataset_name: "NAE"
+      prefix: "NAE_"
+    etl_script:
+      repo_path: "01_ETL/NAE.R"
+
+  nse:
+    metadata:
+      description: "Nationale Studenten Enquête (NSE)"
+      source: "Landelijk Centrum Studiekeuze (LCSK)"
+      update_frequency: "yearly"
+    paths:
+      file_pattern: "NSE"
+    naming:
+      dataset_name: "NSE"
+      prefix: "NSE_"
+    etl_script:
+      repo_path: "01_ETL/NSE_Benchmarkbestand.R"
+
+  premaster_assessment:
+    metadata:
+      description: "Premaster assessment"
+      source: "Premaster Assessment System"
+      update_frequency: "yearly"
+    paths:
+      file_pattern: "Premaster"
+    naming:
+      dataset_name: "Premaster_Assessment"
+      prefix: "PMA_"
+    etl_script:
+      repo_path: "01_ETL/Premaster_Assesment.R"
+
+  resultaten:
+    metadata:
+      description: "Resultaten wordt aangeleverd door functioneel beheer. Zij zetten de data klaar van uit een SAP4HANA database en wordt opgepakt door het Cloud team die door middel van een script het bestand bij ons op de SFTP server plaatsen. In principe zijn dit per levering 2 bestanden; 1 van het vorige collegejaar (totaal) en 1 van het huidige collegejaar (cumulatief tot aanleverdatum)"
+      source: "SAP SLM sftp server"
+      update_frequency: "weekly"
+    paths:
+      file_pattern: "MODBOOK_"
+    naming:
+      dataset_name: "Resultaten"
+      prefix: "SAP_"
+    etl_script:
+      repo_path: "01_ETL/Resultaten.R"
+
+  sap_opleidingen:
+    metadata:
+      description: "Opleidingen data from SAP"
+      source: "MIVUftp server"
+      update_frequency: "monthly"
+    paths:
+      file_pattern: "Opleiding koppeltabel"
+    naming:
+      dataset_name: "SAP_Opleidingen"
+      prefix: "ODW_"
+    etl_script:
+      repo_path: "01_ETL/Opleidingen_SAP.R"
+
+  sap_slm_matching:
+    metadata:
+      description: "SAP SLM matching data from SAP SLM system"
+      source: "SAP SLM SFTP server"
+      update_frequency: "monthly"
+    paths:
+      file_pattern: "MATCHING"
+    naming:
+      dataset_name: "SAP_SLM_Matching"
+      prefix: "SAP_"
+    etl_script:
+      repo_path: "01_ETL/SAP_SLM_Matching.R"
+
+  sap_slm_minoren_specialisaties:
+    metadata:
+      description: "SAP SLM minoren en specialisaties data from SAP SLM system"
+      source: "SAP SLM SFTP server"
+      update_frequency: "monthly"
+    paths:
+      file_pattern: "_ExtractSpecMinoren"
+    naming:
+      dataset_name: "SAP_SLM_minoren_specialisaties"
+      prefix: "SAP_"
+    etl_script:
+      repo_path: "01_ETL/SAP_SLM_minoren_specialisaties.R"
+
+  sectoren_ho:
+    metadata:
+      description: "Sectoren HO data from Inspectie van Onderwijs"
+      source: "Inspectie van Onderwijs"
+      update_frequency: "yearly"
+    paths:
+      file_pattern: "overzicht_sectorindeling_ho"
+    naming:
+      dataset_name: "Sectoren_HO"
+      prefix: "IVO_"
+    etl_script:
+      repo_path: "01_ETL/Sectoren_HO.R"
+
+  selligent_voorlichtingingsproducten:
+    metadata:
+      description: "Selligent voorlichting data"
+      source: "Selligent SFTP"
+      update_frequency: "monthly"
+    paths:
+      file_pattern: "Voorlichtingsproducten"
+    naming:
+      dataset_name: "Selligent_Voorlichtingingsproducten"
+      prefix: "SEL_"
+    etl_script:
+      repo_path: "01_ETL/Selligent_Voorlichting.R"
+
+  selligent_voorlichtingingsproducten_totaal:
+      metadata:
+        description: "Selligent voorlichting totaal data"
+        source: "Selligent SFTP"
+        update_frequency: "monthly"
+      paths:
+        file_pattern: "Totaal_voorlichtingsproducten"
+      naming:
+        dataset_name: "Selligent_Voorlichtingingsproducten_Totaal"
+        prefix: "SEL_"
+      etl_script:
+        repo_path: "01_ETL/Selligent_Totaal_voorlichting.R"
+
+  studiekeuzedatabase:
+    metadata:
+      description: "Study choice database data"
+      source: "Studiekeuzedatabase API"
+      update_frequency: "yearly"
+      has_download_stage: true
+    paths:
+      file_pattern: "Studiekeuzedatabase"
+    naming:
+      dataset_name: "Studiekeuzedatabase"
+      prefix: "SKD_"
+    etl_script:
+      repo_path: "01_ETL/Studiekeuzedatabase.R"
+
+  studielink:
+    metadata:
+      description: "Student registration data from Studielink"
+      source: "MIVU SFTP"
+      update_frequency: "weekly"
+    paths:
+      file_pattern: "ODW220"
+    naming:
+      dataset_name: "Studielink"
+      prefix: "ODW_"
+    etl_script:
+      repo_path: "01_ETL/Studielink.R"
+
+  taaltoets_en:
+    metadata:
+      description: "Taaltoets Engels"
+      source: "Taalcentrum"
+      update_frequency: "yearly"
+    paths:
+      file_pattern: "TaaltoetsEN"
+    naming:
+      dataset_name: "TaaltoetsEN"
+      prefix: "TCV_"
+    etl_script:
+      repo_path: "01_ETL/Taaltoets_EN.R"
+
+  taaltoets_nl:
+    metadata:
+      description: "Taaltoets Nederlands"
+      source: "Taalcentrum"
+      update_frequency: "yearly"
+    paths:
+      file_pattern: "TaaltoetsNL"
+    naming:
+      dataset_name: "TaaltoetsNL"
+      prefix: "TCV_"
+    etl_script:
+      repo_path: "01_ETL/Taaltoets_NL.R"
+
+  termtime_activities:
+    metadata:
+      description: "Activities data from Termtime API"
+      source: "Termtime API"
+      update_frequency: "yearly"
+      has_download_stage: true
+    paths:
+      file_pattern: "Termtime/activities_"
+    naming:
+      dataset_name: "Termtime_activities"
+      prefix: "TER_"
+    etl_script:
+      repo_path: "01_ETL/Termtime/activities.R"
+
+  termtime_courses:
+    metadata:
+      description: "Course data from Termtime API"
+      source: "Termtime API"
+      update_frequency: "yearly"
+      has_download_stage: true
+    paths:
+      file_pattern: "Termtime/courses_"
+    naming:
+      dataset_name: "Termtime_courses"
+      prefix: "TER_"
+    etl_script:
+      repo_path: "01_ETL/Termtime/courses.R"
+
+  termtime_modules:
+    metadata:
+      description: "Module data from Termtime API"
+      source: "Termtime API"
+      update_frequency: "yearly"
+      has_download_stage: true
+    paths:
+      file_pattern: "Termtime/modules_"
+    naming:
+      dataset_name: "Termtime_modules"
+      prefix: "TER_"
+    etl_script:
+      repo_path: "01_ETL/Termtime/modules.R"
+
+  termtime_students:
+    metadata:
+      description: "Student data from Termtime API"
+      source: "Termtime API"
+      update_frequency: "yearly"
+      has_download_stage: true
+    paths:
+      file_pattern: "Termtime/students_"
+    naming:
+      dataset_name: "Termtime_students"
+      prefix: "TER_"
+    etl_script:
+      repo_path: "01_ETL/Termtime/students.R"
+
+  uas_groepen_van_vakken:
+    metadata:
+      description: "UAS Groups of courses data"
+      source: "uas.vu.nl"
+      update_frequency: "yearly"
+    paths:
+      column_mapping: "doc/column_mapping/uas_groepen_van_vakken.csv"
+      file_pattern: "Groups"
+    naming:
+      dataset_name: "UAS_Groepen_van_vakken"
+      prefix: "UAS_"
+    etl_script:
+      repo_path: "01_ETL/UAS_Groepen_van_vakken.R"
+
+  uas_opleidingen:
+    metadata:
+      description: "Study data from UAS"
+      source: "uas.vu.nl"
+      update_frequency: "yearly"
+    paths:
+      file_pattern: "Studies"
+    naming:
+      dataset_name: "UAS_Studies"
+      prefix: "UAS_"
+    etl_script:
+      repo_path: "01_ETL/UAS_Opleidingen.R"
+
+  uas_vakken:
+    metadata:
+      description: "Course/module data from UAS"
+      source: "uas.vu.nl"
+      update_frequency: "yearly"
+    paths:
+      file_pattern: "Modules"
+    naming:
+      dataset_name: "UAS_Vakken"
+      prefix: "UAS_"
+    etl_script:
+      repo_path: "01_ETL/UAS_Vakken.R"
+
+  vakintekeningen:
+    metadata:
+      description: "Vakintekeningen data"
+      source: "MIVU"
+      update_frequency: "daily"
+    paths:
+      file_pattern: "Vakintekeningen"
+    naming:
+      dataset_name: "Vakintekeningen"
+      prefix: "ODW_"
+    etl_script:
+      repo_path: "01_ETL/Vakintekeningen.R"
+
+  vopl:
+    metadata:
+      description: "Vooropleiding data for VOPL analysis"
+      source: "VOPL SFTP VU BI"
+      update_frequency: "weekly"
+    paths:
+      file_pattern: "ODW206 - Vuanalytics Vooropleiding en cijfers"
+    naming:
+      dataset_name: "VOPL_Data"
+      prefix: "ODW_"
+    etl_script:
+      repo_path: "01_ETL/VOPL.R"
+

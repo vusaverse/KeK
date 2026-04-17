@@ -1,0 +1,18 @@
+# config.yaml
+
+# Project metadata
+project:
+  name: "Education Analytics ETL"
+  version: "1.0"
+  repo: "https://github.com/vusaverse/education-analytics"
+
+# Common paths used across the project
+common_paths:
+  reports: "/mnt/reports/"  # Absolute path for storing reports
+  logs: "/mnt/logs/"        # Absolute path for storing logs
+  documentation:            # Grouping documentation-related paths
+    local: "/doc/"          # Absolute path for local documentation files
+  snippets:
+    github: "https://raw.githubusercontent.com/vusaverse/snippets/main/education-analytics.snippets"
+  mapping_tables:
+    "doc/mapping_tables/"

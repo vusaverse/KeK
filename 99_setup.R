@@ -27,12 +27,25 @@ Sys.setenv("BRANCH" = system("git branch --show-current", intern = TRUE))
 
 renv::restore(prompt = FALSE)
 
+
 ## Get all numbered setup scripts from 00_setup directory
 setup_scripts <- list.files(path = "00_project/", pattern = "^\\d+.*\\.R$", full.names = TRUE)
+
+
+
 
 ## Source each setup script in order
 purrr::walk(setup_scripts, source)
 rm(setup_scripts)
+
+.config <- .load_config(env = Sys.getenv("ENVIRONMENT", "dev"))
+.paths <- .config$paths
+
+# Connect to the Azure Keyvault
+.vault <- .connect_to_azure_keyvault(.config$secrets$metadata$key_vault_url)
+
+# First check if the SAS_KEY is not empty
+.check_if_sas_key_is_set()
 
 ## Get all functions in R/ directory
 functions <- list.files(path = "R/", full.names = TRUE)

@@ -69,7 +69,7 @@ get_kek_data <- function(endpoint, token = Sys.getenv("KEK_ACCESS_TOKEN")) {
     }
     response_df <- response_json %>%
       as.data.frame() %>%
-      select(starts_with("value.unl_")) %>%
+      select(starts_with("value.[_]?unl_")) %>%
       rename_with(~ str_remove(., "value."))
     
     result_df <- result_df %>% 

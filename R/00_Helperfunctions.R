@@ -41,25 +41,45 @@ get_kek_data <- function(endpoint, token = Sys.getenv("KEK_ACCESS_TOKEN")) {
   # Construct the URL
   # Remove test in URL for production
   url <- paste0(base_url, "unl_", endpoint)
+  result_df <- tibble::tibble()
+  i <- 1
 
-  # Make the GET request
-  response <- httr::GET(
-    url = url,
-    httr::add_headers("Authorization" = paste("Bearer", token))
-  )
+  ## Keep loading while there is still new rows available outside of 5000 row limit in api
+  while (!is.null(url)) {
+    # Make the GET request
+    response <- httr::GET(
+      url = url,
+      httr::add_headers("Authorization" = paste("Bearer", token))
+    )
+  
+    # Check for HTTP errors
+    httr::stop_for_status(response)
+    
+    # Process the response
+    response_json <- response %>%
+      httr::content("text") %>%
+      jsonlite::fromJSON()
+    
+    ## Get new paginated url
+    url <- response_json$`@odata.nextLink`
+    
+    if (length(response_json$value) == 0) {
+      print("Response is empty. Returning empty df.")
+      return(result_df)
+    }
+    response_df <- response_json %>%
+      as.data.frame() %>%
+      ## Keep both unl_... and _unl_... columns
+      select(matches("^value.[_]?unl_")) %>%
+      rename_with(~ str_remove(., "value."))
+    
+    result_df <- result_df %>% 
+      bind_rows(response_df)
+    print(paste0("Page number: ", i, ". Obtained total of ", nrow(result_df), " records."))
+    i <- i + 1
+  }
 
-  # Check for HTTP errors
-  httr::stop_for_status(response)
-
-  # Process the response
-  df <- response %>%
-    httr::content("text") %>%
-    jsonlite::fromJSON() %>%
-    as.data.frame() %>%
-    select(starts_with("value.unl_")) %>%
-    rename_with(~ str_remove(., "value."))
-
-  return(df)
+  return(result_df)
 }
 
 
@@ -142,7 +162,7 @@ send_data_to_kek <- function(data, endpoint, access_token = Sys.getenv("KEK_ACCE
 
           list(
             status = status_code(response),
-            content = content(response, "text")
+            content = content(response, "text", encoding = "UTF-8")
           )
         },
         error = function(e) {
@@ -155,9 +175,6 @@ send_data_to_kek <- function(data, endpoint, access_token = Sys.getenv("KEK_ACCE
     })) %>%
     ungroup() %>%
     pull(api_result)
-
-  # Optional: Add a small delay between requests
-  Sys.sleep(0.5)
 
   return(results)
 }

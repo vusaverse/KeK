@@ -6,7 +6,13 @@ dfTT_data_entry_app <- load_rds_from_azure(
   file_name = "KeK/Termtime_vakdata.rds"
 )
 
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+## Get api data ####
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+dfcollegejaars <- get_kek_data("collegejaars")
+dfopleidings <- get_kek_data("opleidings")
+dfvaks <-  get_kek_data("vaks")
 
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ## update unl_vakjaar ####
@@ -53,12 +59,10 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
 
 
 ##' Gebruik collegejaar id uit KeK
-dfcolleges <- get_kek_data("collegejaars")
-
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
   mutate(
     `unl_Jaar@odata.bind` = sapply(unl_jaar, function(year) {
-      match <- dfcolleges %>%
+      match <- dfcollegejaars %>%
         filter(unl_name == year) %>%
         pull(unl_collegejaarid)
       
@@ -70,8 +74,6 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
     })
   )
 
-
-dfopleidings <- get_kek_data("opleidings")
 
 ## extract unl_jaar column from  unl_name  , example: ""M Computational Science (joint degree) 2019-2020" --> "2019-2020" 
 dfopleidings_enriched <- dfopleidings %>% 
@@ -88,23 +90,6 @@ dfopleidings_enriched <- dfopleidings %>%
   )
 
 
-
-# dfTT_data_entry_app_test <- dfTT_data_entry_app %>%
-#   rowwise() %>%
-#   mutate(
-#     `unl_Opleiding@odata.bind` = {
-#       match <- dfopleidings_enriched %>%
-#         filter(unl_opleidingscodeisat == INS_Opleidingscode_actueel, unl_jaar == unl_jaar) %>%
-#         pull(unl_opleidingid)
-#       
-#       if (length(match) > 0) {
-#         paste0("unl_opleidings(", match[1], ")")
-#       } else {
-#         NA_character_
-#       }
-#     }
-#   ) %>%
-#   ungroup()
 
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
   rowwise() %>%
@@ -208,6 +193,7 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
 
 ##' *TODO* 
 ##' LOSES A LOT OF ENTRIES -------------------------------------------------------------------------
+##' Update: removing start date and geslaagden requirements loses a lot less
 ##' 
 dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
   dplyr::group_by(unl_vakcode) %>%
@@ -217,8 +203,8 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
                       first(na.omit(`unl_Opleiding@odata.bind`)))
   ) %>%
   dplyr::ungroup() %>%
-  dplyr::filter(!is.na(unl_startdatum)) %>%
-  dplyr::filter(!is.na(unl_aantalgeslaagdeneindtoets)) %>% 
+  #dplyr::filter(!is.na(unl_startdatum)) %>%
+  #dplyr::filter(!is.na(unl_aantalgeslaagdeneindtoets)) #%>% 
   dplyr::filter(!is.na(`unl_Opleiding@odata.bind`))
 
 
@@ -270,6 +256,43 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
     # coalesce unl_vakjaar with unl_vak_jaar_code from lookup, preferring original if present
     unl_vakjaar = coalesce(unl_vakjaar, unl_vak_jaar_code)
   ) 
+
+## add vak guid obtained from unl DEA via api
+dfUNLvak_guid <- dfvaks %>% 
+  dplyr::select(
+    unl_vakcode,
+    unl_vakid,
+    `_unl_jaar_value`
+  ) %>% 
+  dplyr::distinct(
+    unl_vakcode,
+    `_unl_jaar_value`,
+    .keep_all = TRUE
+  )
+
+dfcollegejaars <- dfcollegejaars  %>% 
+  dplyr::select(unl_collegejaarid, unl_name) %>% 
+  dplyr::rename("unl_jaar" = unl_name )
+
+## Add year through id to be able to match vak id to correct module/year combination
+dfUNLvak_guid <- dfUNLvak_guid %>% 
+  dplyr::left_join(
+    dfcollegejaars,
+    by = c(
+      "_unl_jaar_value" = "unl_collegejaarid"
+    ),
+    relationship = "many-to-one"
+  )
+
+## add vak id
+dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
+  dplyr::left_join(
+    dfUNLvak_guid,
+    by = c("unl_vakcode", "unl_jaar"),
+    relationship = "many-to-one"
+  )
+
+
 
 dfTT_data_entry_app3 <- dfTT_data_entry_app2 %>%
   # Fill toetsnaam (unl_eindtoetsnaam) from previous year if missing

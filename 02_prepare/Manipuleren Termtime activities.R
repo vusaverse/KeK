@@ -214,14 +214,12 @@ dfVAK <- dfVAK %>%
   ungroup() %>% 
   mutate(weeks_diff = round(as.numeric(difftime(ACA_Einddatum, Startmoment_vak, units = "weeks")))) 
 
-
+## termtime takes priority when determining whether toetsvorm is tentamen
 dfToetsen <- dfTermtime_activities %>% filter(ter_type %in% c("Tentamen schriftelijk",
                                                       "Tentamen digitaal")) %>% 
   select(ter_module_code, unl_jaar) %>% 
   distinct(ter_module_code, .keep_all = TRUE) %>% 
   mutate(unl_eindtoetsnaam = 941790006)
-
-
 
 dfTT_type_werkvorm <- dfTT_type_werkvorm %>%
   mutate(jaar = parse_number(unl_jaar)) %>%

@@ -6,7 +6,13 @@ dfTT_data_entry_app <- load_rds_from_azure(
   file_name = "KeK/Termtime_vakdata.rds"
 )
 
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+## Get api data ####
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+dfcollegejaars <- get_kek_data("collegejaars")
+dfopleidings <- get_kek_data("opleidings")
+dfvaks <-  get_kek_data("vaks")
 
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ## update unl_vakjaar ####
@@ -53,12 +59,11 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
 
 
 ##' Gebruik collegejaar id uit KeK
-dfcolleges <- get_kek_data("collegejaars")
 
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
   mutate(
     `unl_Jaar@odata.bind` = sapply(unl_jaar, function(year) {
-      match <- dfcolleges %>%
+      match <- dfcollegejaars %>%
         filter(unl_name == year) %>%
         pull(unl_collegejaarid)
       
@@ -70,8 +75,6 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
     })
   )
 
-
-dfopleidings <- get_kek_data("opleidings")
 
 ## extract unl_jaar column from  unl_name  , example: ""M Computational Science (joint degree) 2019-2020" --> "2019-2020" 
 dfopleidings_enriched <- dfopleidings %>% 
@@ -205,22 +208,36 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
   dplyr::filter(!is.na(`unl_Opleiding@odata.bind`))
 
 ## add vak guid
-dfvaks <-  get_kek_data("vaks")
-
-dfUNLvakid <- dfvaks %>% 
+dfUNLvak_guid <- dfvaks %>% 
   dplyr::select(
     unl_vakcode,
-    unl_vakid
+    unl_vakid,
+    `_unl_jaar_value`
     ) %>% 
   dplyr::distinct(
     unl_vakcode,
+    `_unl_jaar_value`,
     .keep_all = TRUE
   )
 
-dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>% 
+dfcollegejaars <- dfcollegejaars  %>% 
+  dplyr::select(unl_collegejaarid, unl_name) %>% 
+  dplyr::rename("unl_jaar" = unl_name )
+  
+
+dfUNLvak_guid <- dfUNLvak_guid %>% 
   dplyr::left_join(
-    dfUNLvakid,
-    by = "unl_vakcode",
+    dfcollegejaars,
+    by = c(
+      "_unl_jaar_value" = "unl_collegejaarid"
+    ),
+    relationship = "many-to-one"
+  )
+
+dfTT_data_entry_app2 <- dfTT_data_entry_app2 %>%
+  dplyr::left_join(
+    dfUNLvak_guid,
+    by = c("unl_vakcode", "unl_jaar"),
     relationship = "many-to-one"
   )
 

@@ -20,6 +20,18 @@ dfTrue <- readxl::read_xlsx(paste0(Sys.getenv("RAW_DATA_DIR"), "/KeK/Overzicht O
 
 dfOPLAS <- readrds_csv(output = "2. Geprepareerde data/OPLAS.rds") ## vervang door UAS vak?
 
+
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+## Get API data ####
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+dfcollegejaars <- get_kek_data("collegejaars")
+dfopleidings <- get_kek_data("opleidings")
+
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+## Edit data ####
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 ## Nog prefix "VU - " gewenst?
 vFaculteiten_VU_voluit <- dfOPLAS %>%
   pull(UAS_Opleiding_Faculteitsnaam) %>%
@@ -66,14 +78,11 @@ dfTT_data_entry_app <- dfOpleidingen_test %>%
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-dfcolleges <- get_kek_data("collegejaars")
-
-
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
   mutate(
     academic_year = convert_to_academic_year(unl_collegejaar),
     `unl_Collegejaar@odata.bind` = sapply(academic_year, function(year) {
-      match <- dfcolleges %>%
+      match <- dfcollegejaars %>%
         filter(unl_name == year) %>%
         pull(unl_collegejaarid)
 
@@ -86,6 +95,32 @@ dfTT_data_entry_app <- dfTT_data_entry_app %>%
   ) %>%
   select(-academic_year, -unl_collegejaar)
 
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+## Add guid ####
+## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+dfopleidings <- dfopleidings %>% 
+  dplyr::select(
+    unl_opleidingscodeisat,
+    unl_opleidingid,
+    `_unl_collegejaar_value`
+  ) %>% 
+  dplyr::mutate(
+    unl_opleidingscodeisat = as.numeric(unl_opleidingscodeisat)
+  ) %>% 
+  dplyr::distinct()
+
+dfTT_data_entry_apptest <- dfTT_data_entry_app %>% 
+  dplyr::mutate(
+    jaar_id = stringr::str_remove_all(dfTT_data_entry_app$`unl_Collegejaar@odata.bind`, "^unl_collegejaars\\(|\\)$")
+  ) %>% 
+  dplyr::left_join(
+    dfopleidings,
+    by = c("jaar_id" = "_unl_collegejaar_value",
+           "unl_opleidingscodeisat"),
+    relationship = "many-to-one"
+  ) %>% 
+  dplyr::select(-jaar_id)
 
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ## X. faculteit ####
@@ -162,6 +197,10 @@ dfTT_data_entry_app3 <- dfTT_data_entry_app3 %>%
     unl_vergoedingperecbetaalt = 0,
     unl_vergoedingperecontvangt = 0
   )
+
+
+
+
 
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ## X. Send POST ####

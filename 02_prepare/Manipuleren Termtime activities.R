@@ -85,11 +85,11 @@ dfTT_type_werkvorm <- dfTT_summary %>%
   mutate(ter_type = case_when(
     ## vaste vormen
     ter_type %in% c("Hoorcollege", "Lecture") ~ "Hoorcollege",
-    ter_type %in% c("Werkcollege", "Instructiecollege") ~ "Werk/instructiecollege",
+    ter_type %in% c("Werkcollege", "Instructiecollege", "Werkgroep") ~ "Werk/instructiecollege",
     ter_type %in% c("Practicum", "Computerpracticum", "training") ~ "Practicum/Lab",
     ## vormen 1, 2, 3
     ## TODO hoort werkgroep hier wel in?
-    ter_type == "Werkgroep" ~ "Groepsopdracht (geroosterde begeleiding)",
+    #ter_type == "Werkgroep" ~ "Groepsopdracht (geroosterde begeleiding)",
     ## TODO Ik zou symposium niet onder Excursie scharen
     ter_type %in% c("Excursie", "Veldwerk", "Symposium") ~ "Excursie",
     ## TODO snap deze ook niet

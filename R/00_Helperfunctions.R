@@ -69,7 +69,8 @@ get_kek_data <- function(endpoint, token = Sys.getenv("KEK_ACCESS_TOKEN")) {
     }
     response_df <- response_json %>%
       as.data.frame() %>%
-      select(starts_with("value.unl_")) %>%
+      ## Keep both unl_... and _unl_... columns
+      select(matches("^value.[_]?unl_")) %>%
       rename_with(~ str_remove(., "value."))
     
     result_df <- result_df %>% 
@@ -161,7 +162,7 @@ send_data_to_kek <- function(data, endpoint, access_token = Sys.getenv("KEK_ACCE
 
           list(
             status = status_code(response),
-            content = content(response, "text")
+            content = content(response, "text", encoding = "UTF-8")
           )
         },
         error = function(e) {
@@ -174,9 +175,6 @@ send_data_to_kek <- function(data, endpoint, access_token = Sys.getenv("KEK_ACCE
     })) %>%
     ungroup() %>%
     pull(api_result)
-
-  # Optional: Add a small delay between requests
-  Sys.sleep(0.5)
 
   return(results)
 }

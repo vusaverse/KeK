@@ -65,7 +65,7 @@ dfTT_summary <- dfTermtime_activities %>%
     n_unique_weeks = length(week_counts[[1]]), # telling van de lengte van de vector om aantal unieke weken te vinden
     nActivities = sum(week_counts[[1]]), # optelling van de hoeveelheid  weken. Omdat een vak soms meerdere keren per week gegeven wordt
     totale_duur_rij = sum(unlist(durationmin)),
-    gemiddelde_duur_per_groep_per_week =  totale_duur_rij/ n_unique_weeks, # gemiddelde duur over de weken dat een werkvorm gegeven wordt in minuten.
+    gemiddelde_duur_per_groep_per_week =  totale_duur_rij/ (n_unique_weeks * n_unique_student_groups), # gemiddelde duur over de weken dat een werkvorm gegeven wordt in minuten.
     totale_contacturen = totale_duur_rij / contactuur_duration
   ) %>%
   select(-c(nActivities, week_counts, totale_duur_rij)) 

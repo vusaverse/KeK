@@ -77,8 +77,6 @@ dfTT_overzicht_werkvormen <- dfTT_summary %>%
   rename(aantal = n) %>%
   arrange(desc(aantal))
 
-
-
 ## Filter op type werkvorm & pivot
 ## TODO: select type werkvorm properly. 
 dfTT_type_werkvorm <- dfTT_summary %>%
@@ -92,8 +90,9 @@ dfTT_type_werkvorm <- dfTT_summary %>%
     #ter_type == "Werkgroep" ~ "Groepsopdracht (geroosterde begeleiding)",
     ## TODO Ik zou symposium niet onder Excursie scharen
     ter_type %in% c("Excursie", "Veldwerk", "Symposium") ~ "Excursie",
-    ## TODO snap deze ook niet
-    ter_type == "Studiegroep" ~ "Groepsopdracht (niet geroosterde begeleiding)",
+    ## TODO snap deze ook niet. Hoe kan iets niet geroosterd zijn als het uit termtime komt???
+    #ter_type == "Studiegroep" ~ "Groepsopdracht (niet geroosterde begeleiding)",
+    ter_type == "Studiegroep" ~ "Groepsopdracht (geroosterde begeleiding)",
     .default = NA_character_
   )) %>%
   filter(!is.na(ter_type)) %>%
@@ -106,6 +105,8 @@ dfTT_type_werkvorm <- dfTT_summary %>%
       "totale_contacturen"
     )
   )
+
+
 
 
 ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -184,7 +185,7 @@ Opleidingkoppel <- readrds_csv(output = "2. Geprepareerde Data/INS_Opleidingkopp
 
 ## Fill some missing opleidingscode_actueel
 ## TODO why here and not in the vak script
-dfVAK <- dfVAK %>%
+dfVAK2 <- dfVAK %>%
   left_join(
     Opleidingkoppel %>%
       distinct(INS_Studieprogramma_CD, INS_Inschrijvingsjaar, .keep_all = TRUE) %>%
@@ -196,7 +197,7 @@ dfVAK <- dfVAK %>%
     )
   ) %>%
   mutate(
-    INS_Opleidingscode_actueel = coalesce(INS_Opleidingscode_actueel.x, INS_Opleidingscode_actueel.y)
+    INS_Opleidingscode_actueel = coalesce(INS_Opleidingscode_actueel.y, INS_Opleidingscode_actueel.x)
   ) %>%
   select(-c(INS_Opleidingscode_actueel.x, INS_Opleidingscode_actueel.y))
 
@@ -242,7 +243,9 @@ dfTT_type_werkvorm <- dfTT_type_werkvorm %>%
   select(-unl_eindtoetsnaam.x, -unl_eindtoetsnaam.y, -jaar)
 
 
+
 ## assign per werkvorm name
+## TODO what does this actually do?
 source("99_utils/helper_functions/helper_werkvormen.R")
 
 dfTT_type_werkvorm <- helper_werkvormen(dfTT_type_werkvorm)

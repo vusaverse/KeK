@@ -10,6 +10,7 @@
 ## ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 modular_assign <- function(df2, col_base, source_map, name_col) {
+
   df2 <- df2 %>%
     ungroup() %>%
     mutate("{col_base}" := case_when(
@@ -17,8 +18,8 @@ modular_assign <- function(df2, col_base, source_map, name_col) {
       !!sym(name_col) == names(source_map)[2] ~ df2[[source_map[[2]]]],
       !!sym(name_col) == names(source_map)[3] ~ df2[[source_map[[3]]]],
       !!sym(name_col) == names(source_map)[4] ~ df2[[source_map[[4]]]],
-      !!sym(name_col) == names(source_map)[5] ~ df2[[source_map[[5]]]],
-      !!sym(name_col) == names(source_map)[6] ~ df2[[source_map[[6]]]]
+      !!sym(name_col) == names(source_map)[5] ~ df2[[source_map[[5]]]]#,
+      #!!sym(name_col) == names(source_map)[6] ~ df2[[source_map[[6]]]]
     ))
   return(df2)
 }
@@ -89,7 +90,7 @@ helper_werkvormen <- function(df) {
     "Groepsopdracht (niet geroosterde begeleiding)" = "totale_contacturen_Groepsopdracht (niet geroosterde begeleiding)"
   )
   
-  for(i in 1:3) {
+  for(i in 1:2) {
     df <- modular_assign(df, paste0("group_", i), group_sources, paste0("name_werkvorm", i))
     df <- modular_assign(df, paste0("total_weeks_", i), weeks_sources, paste0("name_werkvorm", i))
     df <- modular_assign(df, paste0("duration_per_group_per_week_", i), duur_sources, paste0("name_werkvorm", i))
@@ -106,7 +107,7 @@ helper_werkvormen <- function(df) {
         TRUE ~ UAS_Groep_Groepstype
       )
     )
-  
+
   ## Lees documentatie in
   KeK_termtime_naming <- read_documentation(
     "Documentatie_KeK_TermTime_API_new.csv"
@@ -124,8 +125,8 @@ helper_werkvormen <- function(df) {
   
   df <- df %>%
     clear_werkvorm_name(1) %>%
-    clear_werkvorm_name(2) %>%
-    clear_werkvorm_name(3)
+    clear_werkvorm_name(2) #%>%
+    #clear_werkvorm_name(3)
   
   return(df)
 }

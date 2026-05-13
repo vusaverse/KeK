@@ -14,7 +14,7 @@ dfVAKAS <- readrds_csv(output = "3. Analyseset/Vakken_Analyseset_lang_na_stap_2.
 
 ##' Needed to determine INS_Opleidingscode from RES_Studieprogramma_ID
 dfOpleidingskoppel <- readrds_csv(output = "2. Geprepareerde data/INS_Opleidingkoppel.rds") %>% 
-  select(RES_Studieprogramma_ID, 
+  select(INS_Studieprogramma_CD, 
          INS_Opleidingscode_actueel
   ) %>% 
   distinct()
@@ -100,7 +100,7 @@ dfVAK <- dfVAKAS %>%
     UAS_Vak_Duur, # Aantal Collegeweken
     total_students, # Aantal Deelnemers
     OPL_Instructietaal, UAS_Opleiding_Onderwijstaal, # Taal; zie ook OPLAS repo om dit te mergen?
-    RES_Studieprogramma_ID,
+    #RES_Studieprogramma_ID,
     # Hoorcollege Aantal personen WP
     # Hoorcollege Aantal personen OBP
     # Werkcollege Aantal personen WP
@@ -149,7 +149,7 @@ dfVAK <- dfVAKAS %>%
     TRUE ~ Startmoment_vak
   )) %>%
   mutate(weeks_diff = round(as.numeric(difftime(ACA_Einddatum, Startmoment_vak, units = "weeks")))) %>% 
-  left_join(dfOpleidingskoppel, by = c("RES_Studieprogramma_ID"))
+  left_join(dfOpleidingskoppel, by = c("UAS_Vak_Opleidingscode_eigenaar" = "INS_Studieprogramma_CD"))
 
 
 dfVAK_validatie <- dfVAK %>%

@@ -34,19 +34,19 @@ vakjaar_lookup <- c(
   "7" = 941790003           # Special case for numeric 7
 )
 
+# dfTT_data_entry_app <- dfTT_data_entry_app %>%
+#   # Create temporary column with parsed numbers
+#   mutate(parsed_num = parse_number(unl_vakjaar)) %>% 
+#   # Update original column using temporary values
+#   mutate(unl_vakjaar = if_else(
+#     is.na(parsed_num),
+#     unl_vakjaar,          # Keep original if no number found
+#     as.character(parsed_num)       # Use parsed number if available
+#   )) %>%
+#   # Remove temporary column
+#   select(-parsed_num) 
+# 
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
-  # Create temporary column with parsed numbers
-  mutate(parsed_num = parse_number(unl_vakjaar)) %>% 
-  # Update original column using temporary values
-  mutate(unl_vakjaar = if_else(
-    is.na(parsed_num),
-    unl_vakjaar,          # Keep original if no number found
-    as.character(parsed_num)       # Use parsed number if available
-  )) %>%
-  # Remove temporary column
-  select(-parsed_num) 
-
-dfTT_data_entry_app <- dfTT_data_entry_app %>% 
   mutate(
     unl_vakjaar = recode(
       as.character(unl_vakjaar),  # Ensure character type for matching
@@ -146,8 +146,8 @@ map_werkvorm_to_code <- function(werkvorm) {
 dfTT_data_entry_app <- dfTT_data_entry_app %>%
   mutate(
     unl_werkvorm1naam = map_werkvorm_to_code(unl_werkvorm1naam),
-    unl_werkvorm2naam = map_werkvorm_to_code(unl_werkvorm2naam),
-    unl_werkvorm3naam = map_werkvorm_to_code(unl_werkvorm3naam)
+    unl_werkvorm2naam = map_werkvorm_to_code(unl_werkvorm2naam)#,
+    #unl_werkvorm3naam = map_werkvorm_to_code(unl_werkvorm3naam)
   )
 
 
@@ -174,7 +174,7 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
   select(
     -unl_werkvorm2totaalcontacturen,
     -unl_werkvorm1totaalcontacturen,
-    -unl_werkvorm3totaalcontacturen,
+    #-unl_werkvorm3totaalcontacturen,
     # -unl_werkvorm3naam,
     # -unl_jaar,
     -INS_Opleidingscode_actueel,
@@ -188,8 +188,8 @@ dfTT_data_entry_app2 <- dfTT_data_entry_app %>%
   mutate(unl_werkcollegeurenperweekpergroep = unl_werkcollegeurenperweekpergroep / 60) %>% 
   mutate(unl_practicumurenperweekpergroep = unl_practicumurenperweekpergroep / 60) %>%
   mutate(unl_werkvorm1urenperweekpergroep = unl_werkvorm1urenperweekpergroep / 60) %>% 
-  mutate(unl_werkvorm2urenperweekpergroep = unl_werkvorm2urenperweekpergroep / 60) %>% 
-  mutate(unl_werkvorm3urenperweekpergroep = unl_werkvorm3urenperweekpergroep / 60)
+  mutate(unl_werkvorm2urenperweekpergroep = unl_werkvorm2urenperweekpergroep / 60) #%>% 
+  #mutate(unl_werkvorm3urenperweekpergroep = unl_werkvorm3urenperweekpergroep / 60)
 
 ##' *TODO* 
 ##' LOSES A LOT OF ENTRIES -------------------------------------------------------------------------

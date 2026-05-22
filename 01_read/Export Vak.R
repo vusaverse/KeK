@@ -62,7 +62,8 @@ dfResultaten_koppeling <- dfResultaten %>%
     count_zondersucces = sum(RES_Boekingsstatus_omschrijving == "Zondersuccesbeëindigd"),
     count_with_result = sum(!is.na(RES_Beoordeling))
   ) %>%
-  distinct()
+  distinct() %>% 
+  ungroup()
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ## 2. BEWERKEN ####
@@ -211,7 +212,7 @@ dfVAK <- dfVAK %>%
     by = c("UAS_Vak_Jaar", "UAS_Vak_Code", "UAS_Vak_Periode_start")
   ) %>%
   mutate(
-    unl_eindtoetsnaam = coalesce(unl_eindtoetsnaam.y, unl_eindtoetsnaam.x)
+    unl_eindtoetsnaam = coalesce(unl_eindtoetsnaam.x, unl_eindtoetsnaam.y)
   ) %>%
   select(-unl_eindtoetsnaam.x, -unl_eindtoetsnaam.y) %>% 
   distinct(UAS_Vak_Code, UAS_Vak_Jaar, UAS_Vak_Periode_start, Startmoment_vak, .keep_all = TRUE)
@@ -237,7 +238,7 @@ dfVAK <- dfVAK %>%
     by = c("UAS_Vak_Jaar", "UAS_Vak_Code" = "Code")
   ) %>%
   mutate(
-    unl_eindtoetsnaam = coalesce(toetsvorm_code, unl_eindtoetsnaam)
+    unl_eindtoetsnaam = coalesce(unl_eindtoetsnaam, toetsvorm_code)
   ) %>%
   select(-toetsvorm_code) %>%
   distinct(UAS_Vak_Code, UAS_Vak_Jaar, UAS_Vak_Periode_start, Startmoment_vak, .keep_all = TRUE)

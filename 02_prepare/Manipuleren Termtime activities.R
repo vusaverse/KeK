@@ -185,7 +185,7 @@ Opleidingkoppel <- readrds_csv(output = "2. Geprepareerde Data/INS_Opleidingkopp
 
 ## Fill some missing opleidingscode_actueel
 ## TODO why here and not in the vak script
-dfVAK2 <- dfVAK %>%
+dfVAK <- dfVAK %>%
   left_join(
     Opleidingkoppel %>%
       distinct(INS_Studieprogramma_CD, INS_Inschrijvingsjaar, .keep_all = TRUE) %>%
